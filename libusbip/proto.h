@@ -23,8 +23,8 @@
 #define PROTO_INT_FMT                   "i"
 #define PROTO_INT_UINT16_ARR_FMT        "iv#"
 #define PROTO_INT_INT_UINT16_ARR_FMT    "iiv#"
-#define PROTO_STRUCT_DEV_FMT            "S(iiii)"
-#define PROTO_STRUCT_DEVLIST_FMT        "vS(iiii)#"
+#define PROTO_STRUCT_DEV_FMT            "S(vvvv)"
+#define PROTO_STRUCT_DEVLIST_FMT        "iS(vvvv)#"
 
 void proto_send_int(int *val, int sock);
 void proto_recv_int(int *val, int sock);

@@ -1,7 +1,7 @@
 AR := ar
 CC := gcc
 
-CFLAGS = -I./include -I./libusbip -I/usr/local/include -I/opt/local/include
+CFLAGS = -I./include/libusb -I./libusbip -I/usr/local/include -I/opt/local/include
 LDFLAGS = -L/usr/lib -L/opt/local/lib 
 LIBS = -lusb-1.0
 

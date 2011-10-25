@@ -19,6 +19,19 @@
 #include "server.h"
 #include "proto.h"
 
+#include <strings.h>
+
+#include "libusbi.h"
+
+libusbip_rpc_t
+server_read_rpc(int sock) {
+    libusbip_rpc_t rpc;
+    
+    proto_recv_rpc(&rpc, sock);
+    
+    return rpc;
+}
+
 void
 server_usb_init(struct libusbip_connection_info *ci, struct libusb_context **ctx) {
     int error = libusb_init(ctx);
@@ -31,11 +44,27 @@ server_usb_exit(struct libusb_context *ctx) {
     libusb_exit(ctx);
 }
 
-libusbip_rpc_t
-server_read_rpc(int sock) {
-    libusbip_rpc_t rpc;
+void
+server_usb_get_device_list(struct libusbip_connection_info *ci, struct libusb_context *ctx) {
+    struct libusb_device **list;
+    struct libusbip_device_list ilist;
+    size_t i;
+    ssize_t cnt;
     
-    proto_recv_rpc(&rpc, sock);
+    bzero(&ilist, sizeof(struct libusbip_device_list));
 
-    return rpc;
+    cnt =  libusb_get_device_list(ctx, &list);
+    for (i = 0; i < cnt && i < LIBUSBIP_MAX_DEVS; i++) {
+        struct libusb_device *dev = list[i];
+        struct libusbip_device *idev = &ilist.devices[i];
+        idev->bus_number = dev->bus_number;
+        idev->device_address = dev->device_address;
+        idev->num_configurations = dev->num_configurations;
+        idev->session_data = dev->session_data;
+        ilist.n_devices++;
+    }
+    
+    proto_send_struct_devlist(&ilist, ci->client_sock);
+    
+    libusb_free_device_list(list, 1);
 }

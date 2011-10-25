@@ -23,6 +23,7 @@
 #include <libusb-1.0/libusb.h>
 
 #define IS_VALID_STRUCT(__struct) (__struct != NULL)
+#define IS_VALID_CONTEXT(__ctx) (__ctx == LIBUSBIP_CTX_CLIENT || __ctx == LIBUSBIP_CTX_SERVER)
 
 static struct libusb_context *libusbip_ctx = NULL;
 
@@ -62,6 +63,21 @@ void libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {
         error_illegal_libusbip_ctx_t(__func__);
 }
 
+void libusbip_get_device_list(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+                              struct libusbip_device_list *dl) {
+    if (!IS_VALID_STRUCT(ci)) {
+        error_illegal_libusbip_connection_info(__func__);
+        return;
+    }
+    
+    if (ctx == LIBUSBIP_CTX_CLIENT)
+        client_usb_get_device_list(ci, dl);
+    else if (ctx == LIBUSBIP_CTX_SERVER)
+        server_usb_get_device_list(ci, libusbip_ctx);
+    else
+        error_illegal_libusbip_ctx_t(__func__);
+}
+
 libusbip_rpc_t
 libusbip_get_rpc(int sock) {
     return server_read_rpc(sock);
@@ -83,6 +99,9 @@ libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_in
         break;
     case LIBUSBIP_RPC_USB_EXIT:
         libusbip_exit(&ri->ci, ctx);
+        break;
+    case LIBUSBIP_RPC_USB_GET_DEVICE_LIST:
+        libusbip_get_device_list(&ri->ci, ctx, &ri->dl);
         break;
     default:
         error_illegal_libusbip_rpc_t(__func__);

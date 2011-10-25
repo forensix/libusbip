@@ -87,14 +87,14 @@ void proto_recv_struct_dev(struct libusbip_device *dev, int sock) {
 
 void proto_send_struct_devlist(struct libusbip_device_list *devlist, int sock) {
     tpl_node *tn
-    = tpl_map(PROTO_STRUCT_DEVLIST_FMT, &devlist->n_devices, devlist->devices);
+    = tpl_map(PROTO_STRUCT_DEVLIST_FMT, &devlist->n_devices, devlist->devices, LIBUSBIP_MAX_DEVS);
     
     proto_send(tn, sock);
 }
 
 void proto_recv_struct_devlist(struct libusbip_device_list *devlist, int sock) {
     tpl_node *tn
-    = tpl_map(PROTO_STRUCT_DEVLIST_FMT, &devlist->n_devices, devlist->devices);
+    = tpl_map(PROTO_STRUCT_DEVLIST_FMT, &devlist->n_devices, devlist->devices, LIBUSBIP_MAX_DEVS);
     
     proto_recv(tn, sock);
 }

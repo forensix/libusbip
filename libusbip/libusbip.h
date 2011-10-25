@@ -30,7 +30,8 @@ typedef enum {
 
 typedef enum {
     LIBUSBIP_RPC_USB_INIT,
-    LIBUSBIP_RPC_USB_EXIT
+    LIBUSBIP_RPC_USB_EXIT,
+    LIBUSBIP_RPC_USB_GET_DEVICE_LIST
 } libusbip_rpc_t;
 
 typedef enum {
@@ -46,7 +47,7 @@ struct libusbip_device {
 };
 
 struct libusbip_device_list {
-    uint16_t n_devices;
+    int n_devices;
     struct libusbip_device devices[LIBUSBIP_MAX_DEVS];
 };
 
@@ -57,11 +58,15 @@ struct libusbip_connection_info {
 
 struct libusbip_rpc_info {
     struct libusbip_connection_info ci;
+    struct libusbip_device_list dl;
 };
+
+libusbip_rpc_t libusbip_get_rpc(int sock);
+libusbip_error_t libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_info *ri);
 
 libusbip_error_t libusbip_init(struct libusbip_connection_info *ci, libusbip_ctx_t ctx);
 void libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx);
-libusbip_rpc_t libusbip_get_rpc(int sock);
-libusbip_error_t libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_info *ri);
+void libusbip_get_device_list(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_list *dl);
+
 
 #endif /* LIBUSBIP_H */
