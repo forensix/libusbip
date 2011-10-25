@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
     int sock, port;
     
     if (argc < 2) {
-        printf("irpc_server: port\n");
+        printf("rpc_server: <port>\n");
         return 1;
     }
     

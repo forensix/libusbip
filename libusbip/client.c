@@ -25,12 +25,12 @@ libusbip_error_t client_usb_init(struct libusbip_connection_info *ci) {
     
     proto_send_rpc(&rpc, ci->server_sock);
     proto_recv_int(&error, ci->server_sock);
-    
+        
     return error;
 }
 
 void client_usb_exit(struct libusbip_connection_info *ci) {
-    libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_INIT;
-    
+    libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_EXIT;
+
     proto_send_rpc(&rpc, ci->server_sock);
 }

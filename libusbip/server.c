@@ -21,7 +21,7 @@
 
 void
 server_usb_init(struct libusbip_connection_info *ci, struct libusb_context **ctx) {
-    libusbip_error_t error = libusb_init(ctx);
+    int error = libusb_init(ctx);
     
     proto_send_int(&error, ci->client_sock);
 }
@@ -36,6 +36,6 @@ server_read_rpc(int sock) {
     libusbip_rpc_t rpc;
     
     proto_recv_rpc(&rpc, sock);
-    
+
     return rpc;
 }
