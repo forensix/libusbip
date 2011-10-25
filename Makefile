@@ -44,4 +44,4 @@ $(RPCCLIENT_TARGET): $(RPCCLIENT_OBJECTS)
 all: $(TARGETS)
 
 clean:
-	$(RM) $(LIBUSBIP_TARGET) $(RPCSERVER_TARGET) $(RPCCLIENT_TARGET) libusbip/*.o examples/*.o
+	$(RM) $(LIBUSBIP_TARGET) $(RPCSERVER_TARGET) $(RPCCLIENT_TARGET) libusbip/*.o examples/*.o include/tpl/*.o
