@@ -99,11 +99,11 @@ void proto_recv_struct_devlist(struct libusbip_device_list *devlist, int sock) {
     proto_recv(tn, sock);
 }
 
-void proto_send_rpc(int *val, int sock) {
-    proto_send_int(val, sock);
+void proto_send_rpc(libusbip_rpc_t *rpc, int sock) {
+    proto_send_int((int *)rpc, sock);
 }
 
-void proto_recv_rpc(int *val, int sock) {
-    proto_recv_int(val, sock);
+void proto_recv_rpc(libusbip_rpc_t *rpc, int sock) {
+    proto_recv_int((int *)rpc, sock);
 }
 

@@ -35,7 +35,7 @@ libusbip_rpc_t
 server_read_rpc(int sock) {
     libusbip_rpc_t rpc;
     
-    proto_recv_rpc((int *)&rpc, sock);
+    proto_recv_rpc(&rpc, sock);
     
     return rpc;
 }
