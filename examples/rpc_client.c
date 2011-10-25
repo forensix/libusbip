@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include "rpc_client.h"
-
 int main(int argc, char *argv[]) {
     
     return 0;

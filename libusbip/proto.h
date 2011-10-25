@@ -41,5 +41,5 @@ void proto_recv_struct_dev(struct libusbip_device *dev, int sock);
 void proto_send_struct_devlist(struct libusbip_device_list *devlist, int sock);
 void proto_recv_struct_devlist(struct libusbip_device_list *devlist, int sock);
 
-void proto_send_rpc(libusbip_rpc_t rpc, int sock);
-void proto_recv_rpc(libusbip_rpc_t rpc, int sock);
+void proto_send_rpc(int *val, int sock);
+void proto_recv_rpc(int *val, int sock);

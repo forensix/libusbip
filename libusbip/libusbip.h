@@ -16,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
+#ifndef LIBUSBIP_H
+#define LIBUSBIP_H
+
 #include "inttypes.h"
 
 #define LIBUSBIP_MAX_DEVS 256
@@ -26,7 +29,8 @@ typedef enum {
 } libusbip_error_t;
 
 typedef enum {
-    LIBUSBIP_RPC_USB_INIT
+    LIBUSBIP_RPC_USB_INIT,
+    LIBUSBIP_RPC_USB_EXIT
 } libusbip_rpc_t;
 
 typedef enum {
@@ -51,4 +55,13 @@ struct libusbip_connection_info {
     int client_sock;
 };
 
+struct libusbip_rpc_info {
+    struct libusbip_connection_info ci;
+};
+
 libusbip_error_t libusbip_init(struct libusbip_connection_info *ci, libusbip_ctx_t ctx);
+void libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx);
+libusbip_rpc_t libusbip_get_rpc(int sock);
+libusbip_error_t libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_info *ri);
+
+#endif /* LIBUSBIP_H */

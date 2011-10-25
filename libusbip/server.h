@@ -16,6 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
+#include "libusbip.h"
+
 #include <libusb-1.0/libusb.h>
 
 void server_usb_init(struct libusbip_connection_info *ci, struct libusb_context **ctx);
+void server_usb_exit(struct libusb_context *ctx);
+
+libusbip_rpc_t server_read_rpc(int sock);

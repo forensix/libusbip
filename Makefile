@@ -1,24 +1,24 @@
 AR := ar
 CC := gcc
 
-CFLAGS = -I./include -I/usr/local/include -I/opt/local/include
+CFLAGS = -I./include -I./libusbip -I/usr/local/include -I/opt/local/include
 LDFLAGS = -L/usr/lib -L/opt/local/lib 
 LIBS = -lusb-1.0
 
-LIBUSBIP_TARGET = libusbip.a
-LIBUSBIP_OBJECTS = libusbip/libusbip.o libusbip/proto.c libusbip/client.c libusbip/server.c include/tpl/tpl.c
+LIBUSBIP_TARGET = libusbip/libusbip.a
+LIBUSBIP_OBJECTS = libusbip/libusbip.o libusbip/proto.o libusbip/client.o libusbip/server.o include/tpl/tpl.o
 LIBUSBIP_CFLAGS = $(CFLAGS)
 LIBUSBIP_LDFLAGS = $(LDFLAGS)
 LIBUSBIP_LIBS = $(LIBS)
 
 RPCSERVER_TARGET = examples/rpc_server
-RPCSERVER_OBJECTS = examples/rpc_server.o libusbip.a
+RPCSERVER_OBJECTS = examples/rpc_server.o libusbip/libusbip.a
 RPCSERVER_CFLAGS = $(CFLAGS)
 RPCSERVER_LDFLAGS = $(LDFLAGS)
 RPCSERVER_LIBS = $(LIBS)
 
 RPCCLIENT_TARGET = examples/rpc_client
-RPCCLIENT_OBJECTS = examples/rpc_client.o libusbip.a
+RPCCLIENT_OBJECTS = examples/rpc_client.o libusbip/libusbip.a
 RPCCLIENT_CFLAGS = $(CFLAGS)
 RPCCLIENT_LDFLAGS = $(LDFLAGS)
 RPCCLIENT_LIBS = $(LIBS)

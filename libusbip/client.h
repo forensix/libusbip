@@ -19,3 +19,4 @@
 #include "libusbip.h"
 
 libusbip_error_t client_usb_init(struct libusbip_connection_info *ci);
+void client_usb_exit(struct libusbip_connection_info *ci);

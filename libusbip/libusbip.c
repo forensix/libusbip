@@ -15,11 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
-
+#include "libusbip.h"
 #include "client.h"
 #include "server.h"
 
 #include <libusb-1.0/libusb.h>
+
+#define VALID_LIBUSBIP_RPC_INFO(ri) (ri != NULL)
 
 static struct libusb_context *libusbip_ctx = NULL;
 
@@ -37,3 +39,39 @@ libusbip_init(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {
     return error;
 }
 
+void libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {
+    if (ctx == LIBUSBIP_CTX_CLIENT)
+        client_usb_exit(ci);
+    else if (ctx == LIBUSBIP_CTX_SERVER)
+        server_usb_exit(libusbip_ctx);
+}
+
+libusbip_rpc_t
+libusbip_get_rpc(int sock) {
+    return server_read_rpc(sock);
+}
+
+libusbip_error_t
+libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_info *ri) {
+    libusbip_error_t error = LIBUSBIP_E_SUCCESS;
+
+    if (!VALID_LIBUSBIP_RPC_INFO(ri)) {
+        error = LIBUSBIP_E_FAILURE;
+        goto done;
+    }
+    
+    switch (rpc) {
+    case LIBUSBIP_RPC_USB_INIT:
+        error = libusbip_init(&ri->ci, ctx);
+        break;
+    case LIBUSBIP_RPC_USB_EXIT:
+        libusbip_exit(&ri->ci, ctx);
+        break;
+    default:
+        error = LIBUSBIP_E_FAILURE;
+        break;
+    }
+    
+done:
+    return error;
+}
