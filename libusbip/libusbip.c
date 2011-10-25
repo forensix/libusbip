@@ -31,7 +31,7 @@ libusbip_init(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
     if (!IS_VALID_STRUCT(ci)) {
-        error_illegal_libusbip_connection_info_struct(__func__);
+        error_illegal_libusbip_connection_info(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
@@ -40,17 +40,26 @@ libusbip_init(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {
         error = client_usb_init(ci);
     else if (ctx == LIBUSBIP_CTX_SERVER)
         server_usb_init(ci, &libusbip_ctx);
-    else
+    else {
+        error_illegal_libusbip_ctx_t(__func__);
         error = LIBUSBIP_E_FAILURE;
+    }
     
     return error;
 }
 
-void libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {
+void libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {    
+    if (!IS_VALID_STRUCT(ci)) {
+        error_illegal_libusbip_connection_info(__func__);
+        return;
+    }
+    
     if (ctx == LIBUSBIP_CTX_CLIENT)
         client_usb_exit(ci);
     else if (ctx == LIBUSBIP_CTX_SERVER)
         server_usb_exit(libusbip_ctx);
+    else
+        error_illegal_libusbip_ctx_t(__func__);
 }
 
 libusbip_rpc_t
@@ -63,7 +72,7 @@ libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_in
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
 
     if (!IS_VALID_STRUCT(ri)) {
-        error_illegal_libusbip_rpc_info_struct(__func__);
+        error_illegal_libusbip_rpc_info(__func__);
         error = LIBUSBIP_E_FAILURE;
         goto done;
     }
@@ -76,6 +85,7 @@ libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_in
         libusbip_exit(&ri->ci, ctx);
         break;
     default:
+        error_illegal_libusbip_rpc_t(__func__);
         error = LIBUSBIP_E_FAILURE;
         break;
     }

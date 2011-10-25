@@ -19,10 +19,18 @@
 #include "error.h"
 #include <stdio.h>
 
-void error_illegal_libusbip_rpc_info_struct(const char *func) {
-    fprintf(stderr, "[Error] %s - Illegal libusbip_rpc_info struct\n", func);
+void error_illegal_libusbip_rpc_info(const char *func) {
+    fprintf(stderr, "[Error] %s - Illegal libusbip_rpc_info struct.\n", func);
 }
 
-void error_illegal_libusbip_connection_info_struct(const char *func) {
-    fprintf(stderr, "[Error] %s - Illegal libusbip_connection_info struct\n", func);
+void error_illegal_libusbip_connection_info(const char *func) {
+    fprintf(stderr, "[Error] %s - Illegal libusbip_connection_info struct.\n", func);
+}
+
+void error_illegal_libusbip_ctx_t(const char *func) {
+    fprintf(stderr, "[Error] %s - Illegal libusbip_ctx_t context.\n", func);
+}
+
+void error_illegal_libusbip_rpc_t(const char *func) {
+    fprintf(stderr, "[Error] %s - Illegal ibusbip_rpc_t rpc.\n", func);
 }
