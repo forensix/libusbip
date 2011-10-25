@@ -18,14 +18,6 @@
 
 #include "libusbip.h"
 
-#define PROTO_MAX_DATA 1024
-
-#define PROTO_INT_FMT                   "i"
-#define PROTO_INT_UINT16_ARR_FMT        "iv#"
-#define PROTO_INT_INT_UINT16_ARR_FMT    "iiv#"
-#define PROTO_STRUCT_DEV_FMT            "S(vvvv)"
-#define PROTO_STRUCT_DEVLIST_FMT        "iS(vvvv)#"
-
 void proto_send_int(int *val, int sock);
 void proto_recv_int(int *val, int sock);
 
@@ -38,8 +30,11 @@ void proto_recv_int_int_uint16_arr(int *val1, int *val2, uint16_t arr[], int soc
 void proto_send_struct_dev(struct libusbip_device *dev, int sock);
 void proto_recv_struct_dev(struct libusbip_device *dev, int sock);
 
-void proto_send_struct_devlist(struct libusbip_device_list *devlist, int sock);
-void proto_recv_struct_devlist(struct libusbip_device_list *devlist, int sock);
+void proto_send_struct_dev_list(struct libusbip_device_list *dl, int sock);
+void proto_recv_struct_dev_list(struct libusbip_device_list *dl, int sock);
+
+void proto_send_struct_dev_desc(struct libusbip_device_descriptor *dd, int sock);
+void proto_recv_struct_dev_desc(struct libusbip_device_descriptor *dd, int sock);
 
 void proto_send_rpc(libusbip_rpc_t *rpc, int sock);
 void proto_recv_rpc(libusbip_rpc_t *rpc, int sock);

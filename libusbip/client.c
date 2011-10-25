@@ -41,5 +41,19 @@ client_usb_get_device_list(struct libusbip_connection_info *ci, struct libusbip_
     libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_GET_DEVICE_LIST;
     
     proto_send_rpc(&rpc, ci->server_sock);
-    proto_recv_struct_devlist(dl, ci->server_sock);
+    proto_recv_struct_dev_list(dl, ci->server_sock);
+}
+
+libusbip_error_t client_usb_get_device_descriptor(struct libusbip_connection_info *ci,
+                                                  struct libusbip_device *dev,
+                                                  struct libusbip_device_descriptor *dd) {
+    libusbip_error_t error;
+    libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_GET_DEVICE_DESCRIPTOR;
+    
+    proto_send_rpc(&rpc, ci->server_sock);
+    proto_send_struct_dev(dev, ci->server_sock);
+    proto_recv_struct_dev_desc(dd, ci->server_sock);
+    proto_recv_int(&error, ci->server_sock);
+    
+    return error;
 }

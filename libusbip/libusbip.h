@@ -31,7 +31,8 @@ typedef enum {
 typedef enum {
     LIBUSBIP_RPC_USB_INIT,
     LIBUSBIP_RPC_USB_EXIT,
-    LIBUSBIP_RPC_USB_GET_DEVICE_LIST
+    LIBUSBIP_RPC_USB_GET_DEVICE_LIST,
+    LIBUSBIP_RPC_USB_GET_DEVICE_DESCRIPTOR
 } libusbip_rpc_t;
 
 typedef enum {
@@ -43,12 +44,29 @@ struct libusbip_device {
     uint16_t bus_number;
     uint16_t device_address;
     uint16_t num_configurations;
-    uint16_t session_data;
+    uint32_t session_data;
 };
 
 struct libusbip_device_list {
     int n_devices;
     struct libusbip_device devices[LIBUSBIP_MAX_DEVS];
+};
+
+struct libusbip_device_descriptor {
+    uint16_t bLength;
+    uint16_t bDescriptorType;
+    uint16_t bcdUSB;
+    uint16_t bDeviceClass;
+    uint16_t bDeviceSubClass;
+    uint16_t bDeviceProtocol;    
+    uint16_t bMaxPacketSize0;    
+    uint16_t idVendor;    
+    uint16_t idProduct;    
+    uint16_t bcdDevice;    
+    uint16_t iManufacturer;    
+    uint16_t iProduct;    
+    uint16_t iSerialNumber;    
+    uint16_t bNumConfigurations;
 };
 
 struct libusbip_connection_info {
@@ -59,6 +77,8 @@ struct libusbip_connection_info {
 struct libusbip_rpc_info {
     struct libusbip_connection_info ci;
     struct libusbip_device_list dl;
+    struct libusbip_device dev;
+    struct libusbip_device_descriptor dd;
 };
 
 libusbip_rpc_t libusbip_get_rpc(int sock);
@@ -67,6 +87,6 @@ libusbip_error_t libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struc
 libusbip_error_t libusbip_init(struct libusbip_connection_info *ci, libusbip_ctx_t ctx);
 void libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx);
 void libusbip_get_device_list(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_list *dl);
-
+libusbip_error_t libusbip_get_device_descriptor(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device *dev, struct libusbip_device_descriptor *dd);
 
 #endif /* LIBUSBIP_H */

@@ -78,8 +78,31 @@ print_device_list(struct libusbip_device_list *dl) {
     for (i = 0; i < max; i++) {
         struct libusbip_device *idev = &dl->devices[i];
         
-        printf("[%d] bus_number: %u\n", i, idev->bus_number);
+        printf("[%d] bus_number: %u\n", i, idev->session_data);
     }
+}
+
+static int
+print_device_device_descriptor(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+                               struct libusbip_device_list *dl) {
+    libusbip_error_t error = LIBUSBIP_E_SUCCESS;
+    struct libusbip_device_descriptor dd;
+    int max = dl->n_devices;
+    int i;
+
+    bzero(&dd, sizeof(struct libusbip_device_descriptor));
+    for (i = 0; i < max; i++) {
+        struct libusbip_device *idev = &dl->devices[i];
+        error = libusbip_get_device_descriptor(ci, ctx, idev, &dd);
+        if (error < 0) {
+            error = LIBUSBIP_E_FAILURE;
+            goto done;
+        }
+        printf("[%d] vid:pid %04x:%04x\n", i, dd.idVendor, dd.idProduct);
+    }
+    
+done:
+    return error;
 }
 
 int main(int argc, char *argv[]) {
@@ -87,6 +110,7 @@ int main(int argc, char *argv[]) {
     libusbip_ctx_t ctx = LIBUSBIP_CTX_CLIENT;
     struct libusbip_connection_info ci;
     struct libusbip_device_list dl;
+    struct libusbip_device *dev;
     int port;
     
     if (argc < 3) {
@@ -109,10 +133,18 @@ int main(int argc, char *argv[]) {
     
     libusbip_get_device_list(&ci, ctx, &dl);
     print_device_list(&dl);
+        
+    error = print_device_device_descriptor(&ci, ctx, &dl);
+    if (error < 0) {
+        printf("rpc_client: libusbip_get_device_descriptor failed\n");
+        goto exit_fail;
+    }
     
     libusbip_exit(&ci, ctx);
     
     return 0;
+exit_fail:
+    libusbip_exit(&ci, ctx);
 fail:
     return 1;
 }

@@ -18,5 +18,6 @@
 
 void error_illegal_libusbip_rpc_info(const char *func);
 void error_illegal_libusbip_connection_info(const char *func);
+void error_illegal_libusbip_device(const char *func);
 void error_illegal_libusbip_ctx_t(const char *func);
 void error_illegal_libusbip_rpc_t(const char *func);

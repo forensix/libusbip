@@ -1,5 +1,5 @@
 /**
- * libusbip - client.h (Private libusbip header file)
+ * libusbip - warning.c
  * Copyright (C) 2011 Manuel Gebele
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#include "libusbip.h"
+#include "warning.h"
+#include <stdio.h>
 
-libusbip_error_t client_usb_init(struct libusbip_connection_info *ci);
-void client_usb_exit(struct libusbip_connection_info *ci);
-void client_usb_get_device_list(struct libusbip_connection_info *ci, struct libusbip_device_list *dl);
-libusbip_error_t client_usb_get_device_descriptor(struct libusbip_connection_info *ci, struct libusbip_device *dev, struct libusbip_device_descriptor *dd);
+void warning_no_device_found(const char *func) {
+    fprintf(stderr, "[Warning] %s - No device found\n", func);
+}

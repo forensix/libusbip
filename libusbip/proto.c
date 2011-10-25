@@ -19,6 +19,15 @@
 #include "proto.h"
 #include "tpl.h"
 
+#define PROTO_MAX_DATA 1024
+
+#define PROTO_INT_FMT                   "i"
+#define PROTO_INT_UINT16_ARR_FMT        "iv#"
+#define PROTO_INT_INT_UINT16_ARR_FMT    "iiv#"
+#define PROTO_STRUCT_DEV_FMT            "S(vvvu)"
+#define PROTO_STRUCT_DEV_LIST_FMT       "iS(vvvu)#"
+#define PROTO_STRUCT_DEV_DESC_FMT       "S(vvvvvvvvvvvvvv)"
+
 void proto_send(tpl_node *tn, int sock) {
     tpl_pack(tn, 0);
     tpl_dump(tn, TPL_FD, sock);
@@ -85,16 +94,40 @@ void proto_recv_struct_dev(struct libusbip_device *dev, int sock) {
     proto_recv(tn, sock);
 }
 
-void proto_send_struct_devlist(struct libusbip_device_list *devlist, int sock) {
+void proto_send_struct_dev_list(struct libusbip_device_list *dl, int sock) {
+    /*
+     * Note:
+     * I dont know if it is even possible to pack a fixed length
+     * array of a nested structure.
+     */
     tpl_node *tn
-    = tpl_map(PROTO_STRUCT_DEVLIST_FMT, &devlist->n_devices, devlist->devices, LIBUSBIP_MAX_DEVS);
+    = tpl_map(PROTO_STRUCT_DEV_LIST_FMT, &dl->n_devices, dl->devices, LIBUSBIP_MAX_DEVS);
     
     proto_send(tn, sock);
 }
 
-void proto_recv_struct_devlist(struct libusbip_device_list *devlist, int sock) {
+void proto_recv_struct_dev_list(struct libusbip_device_list *dl, int sock) {
+    /*
+     * Note:
+     * I dont know if it is even possible to pack a fixed length
+     * array of a nested structure.
+     */
     tpl_node *tn
-    = tpl_map(PROTO_STRUCT_DEVLIST_FMT, &devlist->n_devices, devlist->devices, LIBUSBIP_MAX_DEVS);
+    = tpl_map(PROTO_STRUCT_DEV_LIST_FMT, &dl->n_devices, dl->devices, LIBUSBIP_MAX_DEVS);
+    
+    proto_recv(tn, sock);
+}
+
+void proto_send_struct_dev_desc(struct libusbip_device_descriptor *dd, int sock) {
+    tpl_node *tn
+    = tpl_map(PROTO_STRUCT_DEV_DESC_FMT, dd);
+    
+    proto_send(tn, sock);
+}
+
+void proto_recv_struct_dev_desc(struct libusbip_device_descriptor *dd, int sock) {
+    tpl_node *tn
+    = tpl_map(PROTO_STRUCT_DEV_DESC_FMT, dd);
     
     proto_recv(tn, sock);
 }

@@ -25,3 +25,4 @@ libusbip_rpc_t server_read_rpc(int sock);
 void server_usb_init(struct libusbip_connection_info *ci, struct libusb_context **ctx);
 void server_usb_exit(struct libusb_context *ctx);
 void server_usb_get_device_list(struct libusbip_connection_info *ci, struct libusb_context *ctx);
+void server_usb_get_device_descriptor(struct libusbip_connection_info *ci, struct libusb_context *ctx);

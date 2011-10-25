@@ -6,7 +6,7 @@ LDFLAGS = -L/usr/lib -L/opt/local/lib
 LIBS = -lusb-1.0
 
 LIBUSBIP_TARGET = libusbip/libusbip.a
-LIBUSBIP_OBJECTS = libusbip/libusbip.o libusbip/proto.o libusbip/client.o libusbip/server.o libusbip/error.o include/tpl/tpl.o
+LIBUSBIP_OBJECTS = libusbip/libusbip.o libusbip/proto.o libusbip/client.o libusbip/server.o libusbip/error.o libusbip/warning.o include/tpl/tpl.o
 LIBUSBIP_CFLAGS = $(CFLAGS)
 LIBUSBIP_LDFLAGS = $(LDFLAGS)
 LIBUSBIP_LIBS = $(LIBS)

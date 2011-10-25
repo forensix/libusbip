@@ -78,6 +78,36 @@ void libusbip_get_device_list(struct libusbip_connection_info *ci, libusbip_ctx_
         error_illegal_libusbip_ctx_t(__func__);
 }
 
+libusbip_error_t
+libusbip_get_device_descriptor(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+                               struct libusbip_device *dev,
+                               struct libusbip_device_descriptor *dd) {
+    libusbip_error_t error = LIBUSBIP_E_SUCCESS;
+    
+    if (!IS_VALID_STRUCT(ci)) {
+        error_illegal_libusbip_connection_info(__func__);
+        error = LIBUSBIP_E_FAILURE;
+        return error;
+    }
+    
+    if (!IS_VALID_STRUCT(dev)) {
+        error_illegal_libusbip_device(__func__);
+        error = LIBUSBIP_E_FAILURE;
+        return error;
+    }
+    
+    if (ctx == LIBUSBIP_CTX_CLIENT)
+        error = client_usb_get_device_descriptor(ci, dev, dd);
+    else if (ctx == LIBUSBIP_CTX_SERVER)
+        server_usb_get_device_descriptor(ci, libusbip_ctx);
+    else {
+        error_illegal_libusbip_ctx_t(__func__);
+        error = LIBUSBIP_E_FAILURE;
+    }
+    
+    return error;
+}
+
 libusbip_rpc_t
 libusbip_get_rpc(int sock) {
     return server_read_rpc(sock);
@@ -102,6 +132,9 @@ libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_in
         break;
     case LIBUSBIP_RPC_USB_GET_DEVICE_LIST:
         libusbip_get_device_list(&ri->ci, ctx, &ri->dl);
+        break;
+    case LIBUSBIP_RPC_USB_GET_DEVICE_DESCRIPTOR:
+        libusbip_get_device_descriptor(&ri->ci, ctx, &ri->dev, &ri->dd);
         break;
     default:
         error_illegal_libusbip_rpc_t(__func__);

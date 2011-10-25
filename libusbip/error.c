@@ -27,6 +27,10 @@ void error_illegal_libusbip_connection_info(const char *func) {
     fprintf(stderr, "[Error] %s - Illegal libusbip_connection_info struct.\n", func);
 }
 
+void error_illegal_libusbip_device(const char *func) {
+    fprintf(stderr, "[Error] %s - Illegal libusbip_device struct.\n", func);
+}
+
 void error_illegal_libusbip_ctx_t(const char *func) {
     fprintf(stderr, "[Error] %s - Illegal libusbip_ctx_t context.\n", func);
 }
