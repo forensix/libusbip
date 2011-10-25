@@ -18,16 +18,23 @@
 #include "libusbip.h"
 #include "client.h"
 #include "server.h"
+#include "error.h"
 
 #include <libusb-1.0/libusb.h>
 
-#define VALID_LIBUSBIP_RPC_INFO(ri) (ri != NULL)
+#define IS_VALID_STRUCT(__struct) (__struct != NULL)
 
 static struct libusb_context *libusbip_ctx = NULL;
 
 libusbip_error_t
 libusbip_init(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
+    
+    if (!IS_VALID_STRUCT(ci)) {
+        error_illegal_libusbip_connection_info_struct(__func__);
+        error = LIBUSBIP_E_FAILURE;
+        return error;
+    }
     
     if (ctx == LIBUSBIP_CTX_CLIENT)
         error = client_usb_init(ci);
@@ -55,7 +62,8 @@ libusbip_error_t
 libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_info *ri) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
 
-    if (!VALID_LIBUSBIP_RPC_INFO(ri)) {
+    if (!IS_VALID_STRUCT(ri)) {
+        error_illegal_libusbip_rpc_info_struct(__func__);
         error = LIBUSBIP_E_FAILURE;
         goto done;
     }
