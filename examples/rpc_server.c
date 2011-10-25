@@ -26,8 +26,7 @@
 #include "libusbip.h"
 
 static int
-init_connection_or_die(int port)
-{
+init_connection_or_die(int port) {
     int sockfd;
 	struct sockaddr_in self;
     
@@ -54,8 +53,7 @@ init_connection_or_die(int port)
 }
 
 static void
-server_loop(int sock)
-{
+server_loop(int sock) {
     struct libusbip_rpc_info ri;
     struct timeval timeout;
     fd_set sockset;

@@ -28,8 +28,7 @@
 #include "libusbip.h"
 
 static int
-create_client_socket()
-{
+create_client_socket() {
     int sock = socket(PF_INET, SOCK_STREAM, 0);
     if (sock == -1)
         return -1;
@@ -38,8 +37,7 @@ create_client_socket()
 }
 
 static int
-try_connect(int sock, const char *ip, int port)
-{
+try_connect(int sock, const char *ip, int port) {
     struct sockaddr_in server;
     int success;
     
@@ -56,8 +54,7 @@ try_connect(int sock, const char *ip, int port)
 }
 
 static int
-connect_or_die(const char *ip, int port)
-{
+connect_or_die(const char *ip, int port) {
     int sock = create_client_socket();
     
     if (sock == -1) {
@@ -73,10 +70,23 @@ connect_or_die(const char *ip, int port)
     return sock;
 }
 
+static void
+print_device_list(struct libusbip_device_list *dl) {
+    int max = dl->n_devices;
+    int i;
+    
+    for (i = 0; i < max; i++) {
+        struct libusbip_device *idev = &dl->devices[i];
+        
+        printf("[%d] bus_number: %u\n", i, idev->bus_number);
+    }
+}
+
 int main(int argc, char *argv[]) {
     libusbip_error_t error;
     libusbip_ctx_t ctx = LIBUSBIP_CTX_CLIENT;
     struct libusbip_connection_info ci;
+    struct libusbip_device_list dl;
     int port;
     
     if (argc < 3) {
@@ -85,7 +95,8 @@ int main(int argc, char *argv[]) {
     }
     
     bzero(&ci, sizeof(struct libusbip_connection_info));
-
+    bzero(&dl, sizeof(struct libusbip_device_list));
+    
     // Setup session
     sscanf(argv[2], "%d", &port);
     ci.server_sock = connect_or_die(argv[1], port);
@@ -95,6 +106,9 @@ int main(int argc, char *argv[]) {
         printf("rpc_client: libusbip_init failed\n");
         goto fail;
     }
+    
+    libusbip_get_device_list(&ci, ctx, &dl);
+    print_device_list(&dl);
     
     libusbip_exit(&ci, ctx);
     

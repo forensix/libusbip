@@ -20,3 +20,4 @@
 
 libusbip_error_t client_usb_init(struct libusbip_connection_info *ci);
 void client_usb_exit(struct libusbip_connection_info *ci);
+void client_usb_get_device_list(struct libusbip_connection_info *ci, struct libusbip_device_list *dl);

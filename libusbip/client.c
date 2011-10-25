@@ -29,8 +29,17 @@ libusbip_error_t client_usb_init(struct libusbip_connection_info *ci) {
     return error;
 }
 
-void client_usb_exit(struct libusbip_connection_info *ci) {
+void
+client_usb_exit(struct libusbip_connection_info *ci) {
     libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_EXIT;
 
     proto_send_rpc(&rpc, ci->server_sock);
+}
+
+void
+client_usb_get_device_list(struct libusbip_connection_info *ci, struct libusbip_device_list *dl) {
+    libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_GET_DEVICE_LIST;
+    
+    proto_send_rpc(&rpc, ci->server_sock);
+    proto_recv_struct_devlist(dl, ci->server_sock);
 }
