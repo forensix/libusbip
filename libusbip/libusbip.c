@@ -25,7 +25,20 @@
 #define IS_VALID_STRUCT(__struct) (__struct != NULL)
 #define IS_VALID_CONTEXT(__ctx) (__ctx == LIBUSBIP_CTX_CLIENT || __ctx == LIBUSBIP_CTX_SERVER)
 
+/*
+ * TODO:
+ * Currently we're using one static handle.  This implies that we've
+ * only one client.  If we need to handle more than one client, we
+ * need to use libusbip_device_handle session_data to identify the corresponding
+ * client!
+ */
+static struct libusb_device_handle *libusbip_hdl = NULL; 
 static struct libusb_context *libusbip_ctx = NULL;
+
+libusbip_rpc_t
+libusbip_get_rpc(int sock) {
+    return server_read_rpc(sock);
+}
 
 libusbip_error_t
 libusbip_init(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {
@@ -49,7 +62,8 @@ libusbip_init(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {
     return error;
 }
 
-void libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {    
+void
+libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {    
     if (!IS_VALID_STRUCT(ci)) {
         error_illegal_libusbip_connection_info(__func__);
         return;
@@ -63,10 +77,15 @@ void libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {
         error_illegal_libusbip_ctx_t(__func__);
 }
 
-void libusbip_get_device_list(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
-                              struct libusbip_device_list *dl) {
+void
+libusbip_get_device_list(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+                         struct libusbip_device_list *dl) {
     if (!IS_VALID_STRUCT(ci)) {
         error_illegal_libusbip_connection_info(__func__);
+        return;
+    }
+    if (!IS_VALID_STRUCT(dl)) {
+        error_illegal_libusbip_device_list(__func__);
         return;
     }
     
@@ -89,9 +108,13 @@ libusbip_get_device_descriptor(struct libusbip_connection_info *ci, libusbip_ctx
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
-    
     if (!IS_VALID_STRUCT(dev)) {
         error_illegal_libusbip_device(__func__);
+        error = LIBUSBIP_E_FAILURE;
+        return error;
+    }
+    if (!IS_VALID_STRUCT(dd)) {
+        error_illegal_libusbip_device_descriptor(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
@@ -108,9 +131,26 @@ libusbip_get_device_descriptor(struct libusbip_connection_info *ci, libusbip_ctx
     return error;
 }
 
-libusbip_rpc_t
-libusbip_get_rpc(int sock) {
-    return server_read_rpc(sock);
+libusbip_error_t
+libusbip_open(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+              struct libusbip_device *dev, struct libusbip_device_handle *hdl) {
+    libusbip_error_t error = LIBUSBIP_E_SUCCESS;
+
+    if (!IS_VALID_STRUCT(ci)) {
+        error_illegal_libusbip_connection_info(__func__);
+        error = LIBUSBIP_E_FAILURE;
+        return error;
+    }
+    if (!IS_VALID_STRUCT(dev)) {
+        error_illegal_libusbip_device(__func__);
+        error = LIBUSBIP_E_FAILURE;
+        return error;
+    }
+    if (!IS_VALID_STRUCT(hdl)) {
+        error_illegal_libusbip_device_handle(__func__);
+        error = LIBUSBIP_E_FAILURE;
+        return error;
+    }
 }
 
 libusbip_error_t

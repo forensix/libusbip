@@ -70,7 +70,9 @@ server_usb_get_device_list(struct libusbip_connection_info *ci, struct libusb_co
     libusb_free_device_list(list, 1);
 }
 
-void server_usb_get_device_descriptor(struct libusbip_connection_info *ci, struct libusb_context *ctx) {
+void
+server_usb_get_device_descriptor(struct libusbip_connection_info *ci,
+                                 struct libusb_context *ctx) {
     struct libusb_device **list = NULL;
     struct libusb_device *dev = NULL;
     struct libusbip_device idev;

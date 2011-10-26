@@ -69,6 +69,10 @@ struct libusbip_device_descriptor {
     uint16_t bNumConfigurations;
 };
 
+struct libusbip_device_handle {
+    uint32_t session_data;
+};
+
 struct libusbip_connection_info {
     int server_sock;
     int client_sock;
@@ -88,5 +92,6 @@ libusbip_error_t libusbip_init(struct libusbip_connection_info *ci, libusbip_ctx
 void libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx);
 void libusbip_get_device_list(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_list *dl);
 libusbip_error_t libusbip_get_device_descriptor(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device *dev, struct libusbip_device_descriptor *dd);
+libusbip_error_t libusbip_open(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device *dev, struct libusbip_device_handle *hdl);
 
 #endif /* LIBUSBIP_H */

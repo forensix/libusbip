@@ -19,7 +19,8 @@
 #include "client.h"
 #include "proto.h"
 
-libusbip_error_t client_usb_init(struct libusbip_connection_info *ci) {
+libusbip_error_t
+client_usb_init(struct libusbip_connection_info *ci) {
     libusbip_error_t error;
     libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_INIT;
     
@@ -37,16 +38,18 @@ client_usb_exit(struct libusbip_connection_info *ci) {
 }
 
 void
-client_usb_get_device_list(struct libusbip_connection_info *ci, struct libusbip_device_list *dl) {
+client_usb_get_device_list(struct libusbip_connection_info *ci,
+                           struct libusbip_device_list *dl) {
     libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_GET_DEVICE_LIST;
     
     proto_send_rpc(&rpc, ci->server_sock);
     proto_recv_struct_dev_list(dl, ci->server_sock);
 }
 
-libusbip_error_t client_usb_get_device_descriptor(struct libusbip_connection_info *ci,
-                                                  struct libusbip_device *dev,
-                                                  struct libusbip_device_descriptor *dd) {
+libusbip_error_t
+client_usb_get_device_descriptor(struct libusbip_connection_info *ci,
+                                 struct libusbip_device *dev,
+                                 struct libusbip_device_descriptor *dd) {
     libusbip_error_t error;
     libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_GET_DEVICE_DESCRIPTOR;
     
