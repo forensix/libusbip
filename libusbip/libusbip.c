@@ -391,6 +391,15 @@ libusbip_clear_halt(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
 }
 
 libusbip_error_t
+libusbip_get_string_descriptor_ascii(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+                                     struct libusbip_device_handle *dh,
+                                     uint16_t idx, unsigned char *data, int length) {
+    libusbip_error_t error = LIBUSBIP_E_SUCCESS;
+    
+    return error;
+}
+
+libusbip_error_t
 libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_info *ri) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
 

@@ -19,8 +19,6 @@
 #include "proto.h"
 #include "tpl.h"
 
-#define PROTO_MAX_DATA 1024
-
 #define PROTO_INT_FMT                   "i"
 #define PROTO_UINT16_FMT                "v"
 #define PROTO_UINT16_UINT16_INT_FMT     "vvi"
@@ -105,7 +103,7 @@ proto_recv_uint16_arr(uint16_t arr[], int sock) {
 void
 proto_send_int_uint16_arr(int *val, uint16_t arr[], int sock) {
     tpl_node *tn
-    = tpl_map(PROTO_INT_UINT16_ARR_FMT, val, arr, PROTO_MAX_DATA);
+    = tpl_map(PROTO_INT_UINT16_ARR_FMT, val, arr, LIBUSBIP_MAX_DATA);
     
     proto_send(tn, sock);
 }
@@ -113,7 +111,7 @@ proto_send_int_uint16_arr(int *val, uint16_t arr[], int sock) {
 void
 proto_recv_int_uint16_arr(int *val, uint16_t arr[], int sock) {
     tpl_node *tn
-    = tpl_map(PROTO_INT_UINT16_ARR_FMT, val, arr, PROTO_MAX_DATA);
+    = tpl_map(PROTO_INT_UINT16_ARR_FMT, val, arr, LIBUSBIP_MAX_DATA);
     
     proto_recv(tn, sock);
 }
@@ -121,7 +119,7 @@ proto_recv_int_uint16_arr(int *val, uint16_t arr[], int sock) {
 void
 proto_send_int_int_uint16_arr(int *val1, int *val2, uint16_t arr[], int sock) {
     tpl_node *tn
-    = tpl_map(PROTO_INT_INT_UINT16_ARR_FMT, val1, val2, arr, PROTO_MAX_DATA);
+    = tpl_map(PROTO_INT_INT_UINT16_ARR_FMT, val1, val2, arr, LIBUSBIP_MAX_DATA);
     
     proto_send(tn, sock);
 }
@@ -129,7 +127,7 @@ proto_send_int_int_uint16_arr(int *val1, int *val2, uint16_t arr[], int sock) {
 void
 proto_recv_int_int_uint16_arr(int *val1, int *val2, uint16_t arr[], int sock) {
     tpl_node *tn
-    = tpl_map(PROTO_INT_INT_UINT16_ARR_FMT, val1, val2, arr, PROTO_MAX_DATA);
+    = tpl_map(PROTO_INT_INT_UINT16_ARR_FMT, val1, val2, arr, LIBUSBIP_MAX_DATA);
     
     proto_recv(tn, sock);
 }
