@@ -133,7 +133,7 @@ libusbip_get_device_descriptor(struct libusbip_connection_info *ci, libusbip_ctx
 
 libusbip_error_t
 libusbip_open(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
-              struct libusbip_device *dev, struct libusbip_device_handle *hdl) {
+              struct libusbip_device *dev, struct libusbip_device_handle *dh) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
 
     if (!IS_VALID_STRUCT(ci)) {
@@ -146,11 +146,38 @@ libusbip_open(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
-    if (!IS_VALID_STRUCT(hdl)) {
+    if (!IS_VALID_STRUCT(dh)) {
         error_illegal_libusbip_device_handle(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
+    
+    if (ctx == LIBUSBIP_CTX_CLIENT)
+        error = client_usb_open(ci, dev, dh);
+    else if (ctx == LIBUSBIP_CTX_SERVER)
+        server_usb_open(ci, libusbip_ctx, libusbip_hdl);
+    else {
+        error_illegal_libusbip_ctx_t(__func__);
+        error = LIBUSBIP_E_FAILURE;
+    }
+    
+    return error;
+}
+
+void
+libusbip_close(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+               struct libusbip_device_handle *dh) {
+    if (!IS_VALID_STRUCT(dh)) {
+        error_illegal_libusbip_device_handle(__func__);
+        return;
+    }
+    
+    if (ctx == LIBUSBIP_CTX_CLIENT)
+        client_usb_close(ci, dh);
+    else if (ctx == LIBUSBIP_CTX_SERVER)
+        server_usb_close(ci, libusbip_hdl);
+    else
+        error_illegal_libusbip_ctx_t(__func__);
 }
 
 libusbip_error_t
@@ -175,6 +202,12 @@ libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_in
         break;
     case LIBUSBIP_RPC_USB_GET_DEVICE_DESCRIPTOR:
         libusbip_get_device_descriptor(&ri->ci, ctx, &ri->dev, &ri->dd);
+        break;
+    case LIBUSBIP_RPC_USB_OPEN:
+        libusbip_open(&ri->ci, ctx, &ri->dev, &ri->dh);
+        break;
+    case LIBUSBIP_RPC_USB_CLOSE:
+        libusbip_close(&ri->ci, ctx, &ri->dh);
         break;
     default:
         error_illegal_libusbip_rpc_t(__func__);

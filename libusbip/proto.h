@@ -36,5 +36,8 @@ void proto_recv_struct_dev_list(struct libusbip_device_list *dl, int sock);
 void proto_send_struct_dev_desc(struct libusbip_device_descriptor *dd, int sock);
 void proto_recv_struct_dev_desc(struct libusbip_device_descriptor *dd, int sock);
 
+void proto_send_struct_dev_hndl(struct libusbip_device_handle *dh, int sock);
+void proto_recv_struct_dev_hndl(struct libusbip_device_handle *dh, int sock);
+
 void proto_send_rpc(libusbip_rpc_t *rpc, int sock);
 void proto_recv_rpc(libusbip_rpc_t *rpc, int sock);

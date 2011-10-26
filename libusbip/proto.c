@@ -27,6 +27,7 @@
 #define PROTO_STRUCT_DEV_FMT            "S(vvvu)"
 #define PROTO_STRUCT_DEV_LIST_FMT       "iS(vvvu)#"
 #define PROTO_STRUCT_DEV_DESC_FMT       "S(vvvvvvvvvvvvvv)"
+#define PROTO_STRUCT_DEV_HNDL_FMT       "S(u)"
 
 void proto_send(tpl_node *tn, int sock) {
     tpl_pack(tn, 0);
@@ -130,6 +131,22 @@ void proto_recv_struct_dev_desc(struct libusbip_device_descriptor *dd, int sock)
     = tpl_map(PROTO_STRUCT_DEV_DESC_FMT, dd);
     
     proto_recv(tn, sock);
+}
+
+void proto_send_struct_dev_hndl(struct libusbip_device_handle *dh, int sock) {
+    tpl_node *tn
+    = tpl_map(PROTO_STRUCT_DEV_HNDL_FMT, dh);
+    
+    proto_send(tn, sock);
+    
+}
+
+void proto_recv_struct_dev_hndl(struct libusbip_device_handle *dh, int sock) {
+    tpl_node *tn
+    = tpl_map(PROTO_STRUCT_DEV_HNDL_FMT, dh);
+    
+    proto_recv(tn, sock);
+    
 }
 
 void proto_send_rpc(libusbip_rpc_t *rpc, int sock) {

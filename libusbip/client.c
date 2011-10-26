@@ -23,9 +23,10 @@ libusbip_error_t
 client_usb_init(struct libusbip_connection_info *ci) {
     libusbip_error_t error;
     libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_INIT;
+    int sock = ci->server_sock;
     
-    proto_send_rpc(&rpc, ci->server_sock);
-    proto_recv_int(&error, ci->server_sock);
+    proto_send_rpc(&rpc, sock);
+    proto_recv_int(&error, sock);
         
     return error;
 }
@@ -33,17 +34,19 @@ client_usb_init(struct libusbip_connection_info *ci) {
 void
 client_usb_exit(struct libusbip_connection_info *ci) {
     libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_EXIT;
+    int sock = ci->server_sock;
 
-    proto_send_rpc(&rpc, ci->server_sock);
+    proto_send_rpc(&rpc, sock);
 }
 
 void
 client_usb_get_device_list(struct libusbip_connection_info *ci,
                            struct libusbip_device_list *dl) {
     libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_GET_DEVICE_LIST;
+    int sock = ci->server_sock;
     
-    proto_send_rpc(&rpc, ci->server_sock);
-    proto_recv_struct_dev_list(dl, ci->server_sock);
+    proto_send_rpc(&rpc, sock);
+    proto_recv_struct_dev_list(dl, sock);
 }
 
 libusbip_error_t
@@ -52,11 +55,41 @@ client_usb_get_device_descriptor(struct libusbip_connection_info *ci,
                                  struct libusbip_device_descriptor *dd) {
     libusbip_error_t error;
     libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_GET_DEVICE_DESCRIPTOR;
-    
-    proto_send_rpc(&rpc, ci->server_sock);
-    proto_send_struct_dev(dev, ci->server_sock);
-    proto_recv_struct_dev_desc(dd, ci->server_sock);
-    proto_recv_int(&error, ci->server_sock);
+    int sock = ci->server_sock;
+
+    proto_send_rpc(&rpc, sock);
+    proto_send_struct_dev(dev, sock);
+    proto_recv_struct_dev_desc(dd, sock);
+    proto_recv_int(&error, sock);
     
     return error;
 }
+
+libusbip_error_t
+client_usb_open(struct libusbip_connection_info *ci, struct libusbip_device *dev,
+                struct libusbip_device_handle *dh) {
+    libusbip_error_t error;
+    libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_OPEN;
+    int sock = ci->server_sock;
+
+    proto_send_rpc(&rpc, sock);
+    proto_send_struct_dev(dev, sock);
+    proto_recv_struct_dev_hndl(dh, sock);
+    proto_recv_int(&error, sock);
+    
+    return error;
+}
+
+void
+client_usb_close(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh) {
+    libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_CLOSE;
+    int sock = ci->server_sock;
+    
+    proto_send_rpc(&rpc, sock);
+    proto_send_struct_dev_hndl(dh, sock);
+}
+
+
+
+
+

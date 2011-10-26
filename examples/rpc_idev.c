@@ -1,5 +1,5 @@
 /**
- * libusbip - rpc_client.c (Remote Procedure Call Client)
+ * libusbip - rpc_idev.c (Remote Procedure Call Client)
  * Copyright (C) 2011 Manuel Gebele
  *
  * This program is free software: you can redistribute it and/or modify
@@ -70,54 +70,54 @@ connect_or_die(const char *ip, int port) {
     return sock;
 }
 
-static void
-print_device_list(struct libusbip_device_list *dl) {
+static int
+idevice_available(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+                  struct libusbip_device_list *dl) {
+
     int max = dl->n_devices;
-    int i;
+    int i, retval = 0;
     
     for (i = 0; i < max; i++) {
-        struct libusbip_device *idev = &dl->devices[i];
-        
-        printf("[%d] bus_number: %u\n", i, idev->session_data);
-    }
-}
-
-static int
-print_device_descriptor(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
-                        struct libusbip_device_list *dl) {
-    libusbip_error_t error = LIBUSBIP_E_SUCCESS;
-    int max = dl->n_devices;
-    int i;
-
-    for (i = 0; i < max; i++) {
+        libusbip_error_t error;
         struct libusbip_device *idev = &dl->devices[i];
         struct libusbip_device_descriptor dd;
         error = libusbip_get_device_descriptor(ci, ctx, idev, &dd);
-        if (error < 0) {
-            error = LIBUSBIP_E_FAILURE;
+        if (error < 0)
+            continue;
+        if (dd.idVendor != 0x05AC)
+            continue;
+        if (dd.idProduct == 0x1280
+         || dd.idProduct == 0x1281
+         || dd.idProduct == 0x1282
+         || dd.idProduct == 0x1283
+         || dd.idProduct == 0x1227) {
+            printf("[*] rpc_idev: found device in recovery mode (%04x:%04x %u)\n",
+                   dd.idVendor, dd.idProduct, idev->session_data);
+            retval = i;
             goto done;
         }
-        printf("[%d] vid:pid %04x:%04x\n", i, dd.idVendor, dd.idProduct);
-    }
-    
+    }    
 done:
-    return error;
+    return retval;
 }
 
 int main(int argc, char *argv[]) {
     libusbip_error_t error;
     libusbip_ctx_t ctx = LIBUSBIP_CTX_CLIENT;
+    struct libusbip_device *idev;
     struct libusbip_connection_info ci;
     struct libusbip_device_list dl;
-    int port;
+    struct libusbip_device_handle dh;
+    int port, idx;
     
     if (argc < 3) {
-        printf("rpc_client: <server-ip> <server-port>\n");
+        printf("rpc_idev: <server-ip> <server-port>\n");
         goto fail;
     }
     
     bzero(&ci, sizeof(struct libusbip_connection_info));
     bzero(&dl, sizeof(struct libusbip_device_list));
+    bzero(&dh, sizeof(struct libusbip_device_handle));    
     
     // Setup session
     sscanf(argv[2], "%d", &port);
@@ -125,21 +125,29 @@ int main(int argc, char *argv[]) {
     
     error = libusbip_init(&ci, ctx);
     if (error < 0) {
-        printf("rpc_client: libusbip_init failed\n");
+        printf("[*] rpc_idev: libusbip_init failed\n");
         goto fail;
     }
     
     libusbip_get_device_list(&ci, ctx, &dl);
-    print_device_list(&dl);
-        
-    error = print_device_descriptor(&ci, ctx, &dl);
-    if (error < 0) {
-        printf("rpc_client: libusbip_get_device_descriptor failed\n");
+    
+    idx = idevice_available(&ci, ctx, &dl); 
+    if (!idx) {
+        printf("[*] rpc_idev: No iDevice found!\n");
         goto exit_fail;
     }
     
-    libusbip_exit(&ci, ctx);
+    idev = &dl.devices[idx];
+    error = libusbip_open(&ci, ctx, idev, &dh);
+    if (error < 0) {
+        printf("[*] rpc_idev: libusbip_open failed\n");
+        goto exit_fail;
+    }
     
+    printf("[*] rpc_idev: opened device %u\n", idev->session_data);
+    
+    libusbip_close(&ci, ctx, &dh);
+    libusbip_exit(&ci, ctx);
     return 0;
 exit_fail:
     libusbip_exit(&ci, ctx);

@@ -22,3 +22,5 @@ libusbip_error_t client_usb_init(struct libusbip_connection_info *ci);
 void client_usb_exit(struct libusbip_connection_info *ci);
 void client_usb_get_device_list(struct libusbip_connection_info *ci, struct libusbip_device_list *dl);
 libusbip_error_t client_usb_get_device_descriptor(struct libusbip_connection_info *ci, struct libusbip_device *dev, struct libusbip_device_descriptor *dd);
+libusbip_error_t client_usb_open(struct libusbip_connection_info *ci, struct libusbip_device *dev, struct libusbip_device_handle *dh);
+void client_usb_close(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh);

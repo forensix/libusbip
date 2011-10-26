@@ -26,3 +26,5 @@ void server_usb_init(struct libusbip_connection_info *ci, struct libusb_context 
 void server_usb_exit(struct libusb_context *ctx);
 void server_usb_get_device_list(struct libusbip_connection_info *ci, struct libusb_context *ctx);
 void server_usb_get_device_descriptor(struct libusbip_connection_info *ci, struct libusb_context *ctx);
+void server_usb_open(struct libusbip_connection_info *ci, struct libusb_context *ctx, struct libusb_device_handle *dh);
+void server_usb_close(struct libusbip_connection_info *ci, struct libusb_device_handle *dh);
