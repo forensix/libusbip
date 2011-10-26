@@ -31,3 +31,8 @@ void server_usb_close(struct libusbip_connection_info *ci);
 void server_usb_claim_interface(struct libusbip_connection_info *ci);
 void server_usb_open_device_with_vid_pid(struct libusbip_connection_info *ci, struct libusb_context *ctx);
 void server_usb_release_interface(struct libusbip_connection_info *ci);
+void server_usb_get_configuration(struct libusbip_connection_info *ci);
+void server_usb_set_configuration(struct libusbip_connection_info *ci);
+void server_usb_set_interface_alt_setting(struct libusbip_connection_info *ci);
+void server_usb_reset_device(struct libusbip_connection_info *ci);
+void server_usb_clear_halt(struct libusbip_connection_info *ci);

@@ -22,6 +22,9 @@
 #define PROTO_MAX_DATA 1024
 
 #define PROTO_INT_FMT                   "i"
+#define PROTO_UINT16_FMT                "v"
+#define PROTO_UINT16_UINT16_INT_FMT     "vvi"
+#define PROTO_UINT16_ARR_FMT            "v#"
 #define PROTO_INT_UINT16_ARR_FMT        "iv#"
 #define PROTO_INT_INT_UINT16_ARR_FMT    "iiv#"
 #define PROTO_STRUCT_DEV_FMT            "S(vvvu)"
@@ -55,6 +58,48 @@ proto_recv_int(int *val, int sock) {
     tpl_node *tn = tpl_map(PROTO_INT_FMT, val);
     
     proto_recv(tn, sock);
+}
+
+void
+proto_send_uint16(uint16_t *val, int sock) {
+    tpl_node *tn = tpl_map(PROTO_UINT16_FMT, val);
+    
+    proto_send(tn, sock);
+}
+
+void
+proto_recv_uint16(uint16_t *val, int sock) {
+    tpl_node *tn = tpl_map(PROTO_UINT16_FMT, val);
+    
+    proto_recv(tn, sock);
+}
+
+void
+proto_send_uint16_uint16_int(uint16_t *val1, uint16_t *val2, int *val3, int sock) {
+    tpl_node *tn = tpl_map(PROTO_UINT16_UINT16_INT_FMT, val1, val2, val3);
+    
+    proto_send(tn, sock);    
+}
+
+void
+proto_recv_uint16_uint16_int(uint16_t *val1, uint16_t *val2, int *val3, int sock) {
+    tpl_node *tn = tpl_map(PROTO_UINT16_UINT16_INT_FMT, val1, val2, val3);
+    
+    proto_recv(tn, sock);    
+}
+
+void
+proto_send_uint16_arr(uint16_t arr[], int sock) {
+    tpl_node *tn = tpl_map(PROTO_UINT16_ARR_FMT, arr);
+    
+    proto_send(tn, sock);
+}
+
+void
+proto_recv_uint16_arr(uint16_t arr[], int sock) {
+    tpl_node *tn = tpl_map(PROTO_UINT16_ARR_FMT, arr);
+    
+    proto_recv(tn, sock);    
 }
 
 void

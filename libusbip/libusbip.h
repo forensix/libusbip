@@ -37,7 +37,12 @@ typedef enum {
     LIBUSBIP_RPC_USB_OPEN_DEVICE_WITH_VID_PID,
     LIBUSBIP_RPC_USB_CLOSE,
     LIBUSBIP_RPC_USB_CLAIM_INTERFACE,
-    LIBUSBIP_RPC_USB_RELEASE_INTERFACE
+    LIBUSBIP_RPC_USB_RELEASE_INTERFACE,
+    LIBUSBIP_RPC_USB_GET_CONFIGURATION,
+    LIBUSBIP_RPC_USB_SET_CONFIGURATION,
+    LIBUSBIP_RPC_USB_SET_INTERFACE_ALT_SETTING,
+    LIBUSBIP_RPC_USB_RESET_DEVICE,
+    LIBUSBIP_RPC_USB_CLEAR_HALT,
 } libusbip_rpc_t;
 
 typedef enum {
@@ -91,8 +96,11 @@ struct libusbip_rpc_info {
     struct libusbip_device_handle dh;
     
     int intf;
-    int vid;
-    int pid;
+    int conf;
+    int alt_setting;
+    uint16_t vid;
+    uint16_t pid;
+    uint16_t endpoint;
 };
 
 libusbip_rpc_t libusbip_get_rpc(int sock);
@@ -103,10 +111,14 @@ libusbip_error_t libusbip_get_device_descriptor(struct libusbip_connection_info 
 libusbip_error_t libusbip_open(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device *dev, struct libusbip_device_handle *dh);
 libusbip_error_t libusbip_claim_interface(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, int intf);
 libusbip_error_t libusbip_release_interface(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, int intf);
+libusbip_error_t libusbip_get_configuration(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, int conf);
+libusbip_error_t libusbip_set_interface_alt_setting(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, int intf, int alt_setting);
+libusbip_error_t libusbip_reset_device(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh);
+libusbip_error_t libusbip_clear_halt(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, uint16_t endpoint);
 
 void libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx);
 void libusbip_get_device_list(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_list *dl);
 void libusbip_close(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh);
-void libusbip_open_device_with_vid_pid(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, int vid, int pid);
+void libusbip_open_device_with_vid_pid(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, uint16_t vid, uint16_t pid);
 
 #endif /* LIBUSBIP_H */

@@ -84,15 +84,15 @@ client_usb_open(struct libusbip_connection_info *ci,
 void
 client_usb_open_device_with_vid_pid(struct libusbip_connection_info *ci,
                                     struct libusbip_device_handle *dh,
-                                    int vid,
-                                    int pid) {
+                                    uint16_t vid,
+                                    uint16_t pid) {
     libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_OPEN_DEVICE_WITH_VID_PID;
     int sock = ci->server_sock;
     
     proto_send_rpc(&rpc, sock);
     proto_send_struct_dev_hndl(dh, sock);
-    proto_send_int(&vid, sock);
-    proto_send_int(&pid, sock);
+    proto_send_uint16(&vid, sock);
+    proto_send_uint16(&pid, sock);
     proto_recv_struct_dev_hndl(dh, sock);
 }
 
@@ -134,4 +134,80 @@ client_usb_release_interface(struct libusbip_connection_info *ci,
     proto_recv_int(&error, sock);
     
     return error;
+}
+
+libusbip_error_t
+client_usb_get_configuration(struct libusbip_connection_info *ci,
+                             struct libusbip_device_handle *dh, int conf) {
+    libusbip_error_t error;
+    libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_GET_CONFIGURATION;
+    int sock = ci->server_sock;
+    
+    proto_send_rpc(&rpc, sock);
+    proto_send_struct_dev_hndl(dh, sock);
+    proto_send_int(&conf, sock);
+    proto_recv_int(&error, sock);
+    
+    return error;
+}
+
+libusbip_error_t
+client_usb_set_configuration(struct libusbip_connection_info *ci,
+                             struct libusbip_device_handle *dh, int conf) {
+    libusbip_error_t error;
+    libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_SET_CONFIGURATION;
+    int sock = ci->server_sock;
+    
+    proto_send_rpc(&rpc, sock);
+    proto_send_struct_dev_hndl(dh, sock);
+    proto_send_int(&conf, sock);
+    proto_recv_int(&error, sock);
+    
+    return error;
+}
+
+libusbip_error_t
+client_usb_set_interface_alt_setting(struct libusbip_connection_info *ci,
+                                     struct libusbip_device_handle *dh,
+                                     int intf, int alt_setting) {
+    libusbip_error_t error;
+    libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_SET_INTERFACE_ALT_SETTING;
+    int sock = ci->server_sock;
+    
+    proto_send_rpc(&rpc, sock);
+    proto_send_struct_dev_hndl(dh, sock);
+    proto_send_int(&intf, sock);
+    proto_send_int(&alt_setting, sock);
+    proto_recv_int(&error, sock);
+    
+    return error;
+}
+
+libusbip_error_t
+client_usb_reset_device(struct libusbip_connection_info *ci,
+                        struct libusbip_device_handle *dh) {
+    libusbip_error_t error;
+    libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_RESET_DEVICE;
+    int sock = ci->server_sock;
+    
+    proto_send_rpc(&rpc, sock);
+    proto_send_struct_dev_hndl(dh, sock);
+    proto_recv_int(&error, sock);
+    
+    return error;
+}
+
+libusbip_error_t
+client_usb_clear_halt(struct libusbip_connection_info *ci,
+                      struct libusbip_device_handle *dh, uint16_t endpoint) {
+    libusbip_error_t error;
+    libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_CLEAR_HALT;
+    int sock = ci->server_sock;
+    
+    proto_send_rpc(&rpc, sock);
+    proto_send_struct_dev_hndl(dh, sock);
+    proto_send_uint16(&endpoint, sock);
+    proto_recv_int(&error, sock);
+    
+    return error;    
 }

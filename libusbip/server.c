@@ -206,13 +206,14 @@ void
 server_usb_open_device_with_vid_pid(struct libusbip_connection_info *ci,
                                     struct libusb_context *ctx) {
     struct libusbip_device_handle dh;
-    int sock = ci->client_sock, vid, pid;
+    int sock = ci->client_sock;
+    uint16_t vid, pid;
     
     bzero(&dh, sizeof(struct libusbip_device_handle));
     
     proto_recv_struct_dev_hndl(&dh, sock);
-    proto_recv_int(&vid, sock);
-    proto_recv_int(&pid, sock);
+    proto_recv_uint16(&vid, sock);
+    proto_recv_uint16(&pid, sock);
     
     if (server_hdl) {
         libusb_close(server_hdl);
@@ -280,3 +281,95 @@ server_usb_release_interface(struct libusbip_connection_info *ci) {
     
     proto_send_int(&error, sock);
 }
+
+void
+server_usb_get_configuration(struct libusbip_connection_info *ci) {
+    struct libusbip_device_handle dh;
+    libusbip_error_t error;
+    int sock = ci->client_sock, conf;
+    
+    bzero(&dh, sizeof(struct libusbip_device_handle));
+
+    proto_recv_struct_dev_hndl(&dh, sock);
+    proto_recv_int(&conf, sock);
+    
+    error = libusb_get_configuration(server_hdl, &conf);
+    if (error < 0)
+        error = LIBUSBIP_E_FAILURE;
+    
+    proto_send_int(&error, sock);    
+}
+
+void
+server_usb_set_configuration(struct libusbip_connection_info *ci) {
+    struct libusbip_device_handle dh;
+    libusbip_error_t error;
+    int sock = ci->client_sock, conf;
+    
+    bzero(&dh, sizeof(struct libusbip_device_handle));
+    
+    proto_recv_struct_dev_hndl(&dh, sock);
+    proto_recv_int(&conf, sock);
+    
+    error = libusb_set_configuration(server_hdl, conf);
+    if (error < 0)
+        error = LIBUSBIP_E_FAILURE;
+    
+    proto_send_int(&error, sock);    
+}
+
+void
+server_usb_set_interface_alt_setting(struct libusbip_connection_info *ci) {
+    struct libusbip_device_handle dh;
+    libusbip_error_t error;
+    int sock = ci->client_sock, intf, alt_setting;
+    
+    bzero(&dh, sizeof(struct libusbip_device_handle));
+    
+    proto_recv_struct_dev_hndl(&dh, sock);
+    proto_recv_int(&intf, sock);
+    proto_recv_int(&alt_setting, sock);
+    
+    error = libusb_set_interface_alt_setting(server_hdl, intf, alt_setting);
+    if (error < 0)
+        error = LIBUSBIP_E_FAILURE;
+    
+    proto_send_int(&error, sock);
+}
+
+void
+server_usb_reset_device(struct libusbip_connection_info *ci) {
+    struct libusbip_device_handle dh;
+    libusbip_error_t error;
+    int sock = ci->client_sock;
+    
+    bzero(&dh, sizeof(struct libusbip_device_handle));
+    
+    proto_recv_struct_dev_hndl(&dh, sock);
+    
+    error = libusb_reset_device(server_hdl);
+    if (error < 0)
+        error = LIBUSBIP_E_FAILURE;
+    
+    proto_send_int(&error, sock);    
+}
+
+void
+server_usb_clear_halt(struct libusbip_connection_info *ci) {
+    struct libusbip_device_handle dh;
+    libusbip_error_t error;
+    int sock = ci->client_sock;
+    uint16_t endpoint;
+    
+    bzero(&dh, sizeof(struct libusbip_device_handle));
+    
+    proto_recv_struct_dev_hndl(&dh, sock);
+    proto_recv_uint16(&endpoint, sock);
+    
+    error = libusb_clear_halt(server_hdl, endpoint);
+    if (error < 0)
+        error = LIBUSBIP_E_FAILURE;
+    
+    proto_send_int(&error, sock);
+}
+
