@@ -24,6 +24,18 @@
 
 #include "libusbi.h"
 
+/*
+ * TODO:
+ * Currently we're using one static handle.  This implies that we've
+ * only one client.  If we need to handle more than one client, we
+ * need to use libusbip_device_handle's session_data to identify the
+ * corresponding client!
+ *
+ * There are 2 places where a client can get its handler: server_usb_open
+ * and server_usb_open_device_with_vid_pid.
+ */
+static struct libusb_device_handle *server_hdl = NULL; 
+
 libusbip_rpc_t
 server_read_rpc(int sock) {
     libusbip_rpc_t rpc;
@@ -34,7 +46,8 @@ server_read_rpc(int sock) {
 }
 
 void
-server_usb_init(struct libusbip_connection_info *ci, struct libusb_context **ctx) {
+server_usb_init(struct libusbip_connection_info *ci,
+                struct libusb_context **ctx) {
     libusbip_error_t error = libusb_init(ctx);
     int sock = ci->client_sock;
     
@@ -47,7 +60,8 @@ server_usb_exit(struct libusb_context *ctx) {
 }
 
 void
-server_usb_get_device_list(struct libusbip_connection_info *ci, struct libusb_context *ctx) {
+server_usb_get_device_list(struct libusbip_connection_info *ci,
+                           struct libusb_context *ctx) {
     struct libusb_device **list;
     struct libusbip_device_list ilist;
     int sock = ci->client_sock;
@@ -134,16 +148,19 @@ send:
 }
 
 void
-server_usb_open(struct libusbip_connection_info *ci, struct libusb_context *ctx,
-                struct libusb_device_handle *dh) {
+server_usb_open(struct libusbip_connection_info *ci,
+                struct libusb_context *ctx) {
     struct libusb_device **list = NULL;
     struct libusb_device *dev = NULL;
     struct libusbip_device idev;
-    struct libusbip_device_handle ih;
+    struct libusbip_device_handle dh;
     int sock = ci->client_sock;
     libusbip_error_t error;
     ssize_t cnt;
     size_t i;
+    
+    bzero(&idev, sizeof(struct libusbip_device));
+    bzero(&dh, sizeof(struct libusbip_device_handle));
     
     proto_recv_struct_dev(&idev, sock);
     
@@ -163,14 +180,14 @@ server_usb_open(struct libusbip_connection_info *ci, struct libusb_context *ctx,
         goto free;
     }
 
-    error = libusb_open(dev, &dh);
+    error = libusb_open(dev, &server_hdl);
     if (error < 0) {
         error = LIBUSBIP_E_FAILURE;
         goto free;
     }
 
     /* Store handler so we can access and identify it later. */
-    ih.session_data = dh->dev->session_data;
+    dh.session_data = server_hdl->dev->session_data;
     
 free:
     libusb_free_device_list(list, 1);
@@ -181,18 +198,85 @@ send:
      * more handles we need to convert the handle back to get
      * the correct one.
      */
-    proto_send_struct_dev_hndl(&ih, sock);
+    proto_send_struct_dev_hndl(&dh, sock);
     proto_send_int(&error, sock);
 }
 
 void
-server_usb_close(struct libusbip_connection_info *ci, struct libusb_device_handle *dh) {
-    struct libusbip_device_handle ih;
-    int sock = ci->client_sock;
+server_usb_open_device_with_vid_pid(struct libusbip_connection_info *ci,
+                                    struct libusb_context *ctx) {
+    struct libusbip_device_handle dh;
+    int sock = ci->client_sock, vid, pid;
     
-    proto_recv_struct_dev_hndl(&ih, sock);
+    bzero(&dh, sizeof(struct libusbip_device_handle));
     
-    if (dh)
-        libusb_close(dh);
+    proto_recv_struct_dev_hndl(&dh, sock);
+    proto_recv_int(&vid, sock);
+    proto_recv_int(&pid, sock);
+    
+    if (server_hdl) {
+        libusb_close(server_hdl);
+        server_hdl = NULL;
+    }
+    
+    server_hdl = libusb_open_device_with_vid_pid(ctx, vid, pid);
+    if (!server_hdl) {
+        goto send;
+    }
+    
+    /* Store handler so we can access and identify it later. */
+    dh.session_data = server_hdl->dev->session_data;
+send:
+    proto_send_struct_dev_hndl(&dh, sock);
 }
 
+void
+server_usb_close(struct libusbip_connection_info *ci) {
+    struct libusbip_device_handle dh;
+    int sock = ci->client_sock;
+    
+    bzero(&dh, sizeof(struct libusbip_device_handle));
+    
+    proto_recv_struct_dev_hndl(&dh, sock);
+    
+    if (server_hdl) {
+        libusb_close(server_hdl);
+        server_hdl = NULL;
+    }
+}
+
+void
+server_usb_claim_interface(struct libusbip_connection_info *ci) {
+    struct libusbip_device_handle dh;
+    libusbip_error_t error;
+    int sock = ci->client_sock, intf;
+    
+    bzero(&dh, sizeof(struct libusbip_device_handle));
+    
+    proto_recv_struct_dev_hndl(&dh, sock);
+    proto_recv_int(&intf, sock);
+    
+    error = libusb_claim_interface(server_hdl, intf);
+    if (error < 0)
+        error = LIBUSBIP_E_FAILURE;
+    
+    proto_send_int(&error, sock);
+}
+
+void
+server_usb_release_interface(struct libusbip_connection_info *ci) {
+    struct libusbip_device_handle dh;
+    libusbip_error_t error;
+    int sock = ci->client_sock, intf;
+    
+    bzero(&dh, sizeof(struct libusbip_device_handle));
+    
+    proto_recv_struct_dev_hndl(&dh, sock);
+    proto_recv_int(&intf, sock);
+    
+    error = libusb_release_interface(server_hdl, intf);
+    if (error < 0)
+        error = LIBUSBIP_E_FAILURE;
+    
+    proto_send_int(&error, sock);
+}

@@ -29,111 +29,128 @@
 #define PROTO_STRUCT_DEV_DESC_FMT       "S(vvvvvvvvvvvvvv)"
 #define PROTO_STRUCT_DEV_HNDL_FMT       "S(u)"
 
-void proto_send(tpl_node *tn, int sock) {
+void
+proto_send(tpl_node *tn, int sock) {
     tpl_pack(tn, 0);
     tpl_dump(tn, TPL_FD, sock);
     tpl_free(tn);
 }
 
-void proto_recv(tpl_node *tn, int sock) {
+void
+proto_recv(tpl_node *tn, int sock) {
     tpl_load(tn, TPL_FD, sock);
     tpl_unpack(tn, 0);
     tpl_free(tn);
 }
 
-void proto_send_int(int *val, int sock) {
+void
+proto_send_int(int *val, int sock) {
     tpl_node *tn = tpl_map(PROTO_INT_FMT, val);
     
     proto_send(tn, sock);
 }
 
-void proto_recv_int(int *val, int sock) {
+void
+proto_recv_int(int *val, int sock) {
     tpl_node *tn = tpl_map(PROTO_INT_FMT, val);
     
     proto_recv(tn, sock);
 }
 
-void proto_send_int_uint16_arr(int *val, uint16_t arr[], int sock) {
+void
+proto_send_int_uint16_arr(int *val, uint16_t arr[], int sock) {
     tpl_node *tn
     = tpl_map(PROTO_INT_UINT16_ARR_FMT, val, arr, PROTO_MAX_DATA);
     
     proto_send(tn, sock);
 }
 
-void proto_recv_int_uint16_arr(int *val, uint16_t arr[], int sock) {
+void
+proto_recv_int_uint16_arr(int *val, uint16_t arr[], int sock) {
     tpl_node *tn
     = tpl_map(PROTO_INT_UINT16_ARR_FMT, val, arr, PROTO_MAX_DATA);
     
     proto_recv(tn, sock);
 }
 
-void proto_send_int_int_uint16_arr(int *val1, int *val2, uint16_t arr[], int sock) {
+void
+proto_send_int_int_uint16_arr(int *val1, int *val2, uint16_t arr[], int sock) {
     tpl_node *tn
     = tpl_map(PROTO_INT_INT_UINT16_ARR_FMT, val1, val2, arr, PROTO_MAX_DATA);
     
     proto_send(tn, sock);
 }
 
-void proto_recv_int_int_uint16_arr(int *val1, int *val2, uint16_t arr[], int sock) {
+void
+proto_recv_int_int_uint16_arr(int *val1, int *val2, uint16_t arr[], int sock) {
     tpl_node *tn
     = tpl_map(PROTO_INT_INT_UINT16_ARR_FMT, val1, val2, arr, PROTO_MAX_DATA);
     
     proto_recv(tn, sock);
 }
 
-void proto_send_struct_dev(struct libusbip_device *dev, int sock) {
+void
+proto_send_struct_dev(struct libusbip_device *dev, int sock) {
     tpl_node *tn
     = tpl_map(PROTO_STRUCT_DEV_FMT, dev);
     
     proto_send(tn, sock);
 }
 
-void proto_recv_struct_dev(struct libusbip_device *dev, int sock) {
+void
+proto_recv_struct_dev(struct libusbip_device *dev, int sock) {
     tpl_node *tn
     = tpl_map(PROTO_STRUCT_DEV_FMT, dev);
     
     proto_recv(tn, sock);
 }
 
-void proto_send_struct_dev_list(struct libusbip_device_list *dl, int sock) {
+void
+proto_send_struct_dev_list(struct libusbip_device_list *dl, int sock) {
     /*
      * Note:
      * I dont know if it is even possible to pack a fixed length
      * array of a nested structure.
      */
     tpl_node *tn
-    = tpl_map(PROTO_STRUCT_DEV_LIST_FMT, &dl->n_devices, dl->devices, LIBUSBIP_MAX_DEVS);
+    = tpl_map(PROTO_STRUCT_DEV_LIST_FMT, &dl->n_devices, dl->devices,
+              LIBUSBIP_MAX_DEVS);
     
     proto_send(tn, sock);
 }
 
-void proto_recv_struct_dev_list(struct libusbip_device_list *dl, int sock) {
+void
+proto_recv_struct_dev_list(struct libusbip_device_list *dl, int sock) {
     /*
      * Note:
      * I dont know if it is even possible to pack a fixed length
      * array of a nested structure.
      */
     tpl_node *tn
-    = tpl_map(PROTO_STRUCT_DEV_LIST_FMT, &dl->n_devices, dl->devices, LIBUSBIP_MAX_DEVS);
+    = tpl_map(PROTO_STRUCT_DEV_LIST_FMT, &dl->n_devices, dl->devices,
+              LIBUSBIP_MAX_DEVS);
     
     proto_recv(tn, sock);
 }
 
-void proto_send_struct_dev_desc(struct libusbip_device_descriptor *dd, int sock) {
+void
+proto_send_struct_dev_desc(struct libusbip_device_descriptor *dd, int sock) {
     tpl_node *tn
     = tpl_map(PROTO_STRUCT_DEV_DESC_FMT, dd);
     
     proto_send(tn, sock);
 }
 
-void proto_recv_struct_dev_desc(struct libusbip_device_descriptor *dd, int sock) {
+void
+proto_recv_struct_dev_desc(struct libusbip_device_descriptor *dd, int sock) {
     tpl_node *tn
     = tpl_map(PROTO_STRUCT_DEV_DESC_FMT, dd);
     
     proto_recv(tn, sock);
 }
 
-void proto_send_struct_dev_hndl(struct libusbip_device_handle *dh, int sock) {
+void
+proto_send_struct_dev_hndl(struct libusbip_device_handle *dh, int sock) {
     tpl_node *tn
     = tpl_map(PROTO_STRUCT_DEV_HNDL_FMT, dh);
     
@@ -141,7 +158,8 @@ void proto_send_struct_dev_hndl(struct libusbip_device_handle *dh, int sock) {
     
 }
 
-void proto_recv_struct_dev_hndl(struct libusbip_device_handle *dh, int sock) {
+void
+proto_recv_struct_dev_hndl(struct libusbip_device_handle *dh, int sock) {
     tpl_node *tn
     = tpl_map(PROTO_STRUCT_DEV_HNDL_FMT, dh);
     
@@ -149,11 +167,13 @@ void proto_recv_struct_dev_hndl(struct libusbip_device_handle *dh, int sock) {
     
 }
 
-void proto_send_rpc(libusbip_rpc_t *rpc, int sock) {
+void
+proto_send_rpc(libusbip_rpc_t *rpc, int sock) {
     proto_send_int((int *)rpc, sock);
 }
 
-void proto_recv_rpc(libusbip_rpc_t *rpc, int sock) {
+void
+proto_recv_rpc(libusbip_rpc_t *rpc, int sock) {
     proto_recv_int((int *)rpc, sock);
 }
 

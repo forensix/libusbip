@@ -1,5 +1,5 @@
 /**
- * libusbip - rpc_idev.c (Remote Procedure Call Client)
+ * libusbip - search_idev.c (Remote Procedure Call Client)
  * Copyright (C) 2011 Manuel Gebele
  *
  * This program is free software: you can redistribute it and/or modify
@@ -91,7 +91,7 @@ idevice_available(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
          || dd.idProduct == 0x1282
          || dd.idProduct == 0x1283
          || dd.idProduct == 0x1227) {
-            printf("[*] rpc_idev: found device in recovery mode (%04x:%04x %u)\n",
+            printf("[*] search_idev: found device in recovery mode (%04x:%04x %u)\n",
                    dd.idVendor, dd.idProduct, idev->session_data);
             retval = i;
             goto done;
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
     int port, idx;
     
     if (argc < 3) {
-        printf("rpc_idev: <server-ip> <server-port>\n");
+        printf("search_idev: <server-ip> <server-port>\n");
         goto fail;
     }
     
@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
     
     error = libusbip_init(&ci, ctx);
     if (error < 0) {
-        printf("[*] rpc_idev: libusbip_init failed\n");
+        printf("[*] search_idev: libusbip_init failed\n");
         goto fail;
     }
     
@@ -133,18 +133,21 @@ int main(int argc, char *argv[]) {
     
     idx = idevice_available(&ci, ctx, &dl); 
     if (!idx) {
-        printf("[*] rpc_idev: No iDevice found!\n");
+        printf("[*] search_idev: No iDevice found!\n");
         goto exit_fail;
     }
     
     idev = &dl.devices[idx];
     error = libusbip_open(&ci, ctx, idev, &dh);
     if (error < 0) {
-        printf("[*] rpc_idev: libusbip_open failed\n");
+        printf("[*] search_idev: libusbip_open failed\n");
         goto exit_fail;
     }
     
-    printf("[*] rpc_idev: opened device %u\n", idev->session_data);
+    printf("[*] search_idev: opened device %u\n", idev->session_data);
+    
+    libusbip_claim_interface(&ci, ctx, &dh, 0x0);
+    libusbip_release_interface(&ci, ctx, &dh, 0x0);
     
     libusbip_close(&ci, ctx, &dh);
     libusbip_exit(&ci, ctx);
