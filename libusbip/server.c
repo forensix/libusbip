@@ -395,18 +395,28 @@ server_usb_get_string_descriptor_ascii(struct libusbip_connection_info *ci) {
     proto_send_int(&error, sock);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void
+server_usb_control_transfer(struct libusbip_connection_info *ci) {
+    struct libusbip_device_handle dh;
+    int bytes;
+    int sock = ci->client_sock;
+    uint16_t req_type, req, val, idx, len, buf[LIBUSBIP_MAX_DATA];
+    uint32_t timeout;
+    
+    bzero(&dh, sizeof(struct libusbip_device_handle));
+    
+    proto_recv_struct_dev_hndl(&dh, sock);
+    proto_recv_uint16(&req_type, sock);
+    proto_recv_uint16(&req, sock);
+    proto_recv_uint16(&val, sock);
+    proto_recv_uint16(&idx, sock);
+    proto_recv_uint16_arr(buf, sock);
+    proto_recv_uint16(&len, sock);
+    proto_recv_uint32(&timeout, sock);
+    
+    bytes = libusb_control_transfer(server_hdl, req_type, req, val, idx,
+                                    (unsigned char *)buf, len, timeout);
+    
+    proto_send_uint16_arr(buf, sock);
+    proto_send_int(&bytes, sock);
+}

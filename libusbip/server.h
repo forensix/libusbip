@@ -36,3 +36,4 @@ void server_usb_set_interface_alt_setting(struct libusbip_connection_info *ci);
 void server_usb_reset_device(struct libusbip_connection_info *ci);
 void server_usb_clear_halt(struct libusbip_connection_info *ci);
 void server_usb_get_string_descriptor_ascii(struct libusbip_connection_info *ci);
+void server_usb_control_transfer(struct libusbip_connection_info *ci);

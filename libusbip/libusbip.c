@@ -424,12 +424,37 @@ libusbip_get_string_descriptor_ascii(struct libusbip_connection_info *ci, libusb
     return error;
 }
 
-libusbip_error_t
+int
 libusbip_control_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
                           struct libusbip_device_handle *dh, uint16_t req_type,
                           uint16_t req, uint16_t val, uint16_t idx,
-                          unsigned char *data, uint16_t length, uint32_t timeout) {
-
+                          unsigned char *data, uint16_t len, uint32_t timeout) {    
+    int bytes_transfered = 0;
+    
+    if (!IS_VALID_OBJ(ci)) {
+        error_illegal_libusbip_connection_info(__func__);
+        return LIBUSBIP_E_FAILURE;
+    }
+    if (!IS_VALID_OBJ(dh)) {
+        error_illegal_libusbip_device_handle(__func__);
+        return LIBUSBIP_E_FAILURE;
+    }
+    if (!IS_VALID_OBJ(data)) {
+        error_illegal_buffer(__func__);
+        return LIBUSBIP_E_FAILURE;
+    }
+    
+    if (ctx == LIBUSBIP_CTX_CLIENT)
+        bytes_transfered = client_usb_control_transfer(ci, dh, req_type, req, val,
+                                                       idx, data, len, timeout);
+    else if (ctx == LIBUSBIP_CTX_SERVER)
+        server_usb_control_transfer(ci);
+    else {
+        error_illegal_libusbip_ctx_t(__func__);
+        return LIBUSBIP_E_FAILURE;
+    }
+    
+    return bytes_transfered;
 }
 
 libusbip_error_t
@@ -504,6 +529,13 @@ libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_in
                                                      ri->idx, (unsigned char *)ri->data,
                                                      ri->length);
         break;
+            
+    case LIBUSBIP_RPC_USB_CONTROL_TRANSFER:
+        /* NOTE: Not really an error. */
+        return libusbip_control_transfer(&ri->ci, ctx, &ri->dh, ri->req_type,
+                                         ri->req, ri->val, ri->idx, (unsigned char *)ri->data,
+                                         ri->len, ri->timeout);
+        break; /* NEVER_REACHED */
             
     default:
         error_illegal_libusbip_rpc_t(__func__);

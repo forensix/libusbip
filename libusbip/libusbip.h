@@ -44,7 +44,8 @@ typedef enum {
     LIBUSBIP_RPC_USB_SET_INTERFACE_ALT_SETTING,
     LIBUSBIP_RPC_USB_RESET_DEVICE,
     LIBUSBIP_RPC_USB_CLEAR_HALT,
-    LIBUSBIP_RPC_USB_GET_STRING_DESCRIPTOR_ASCII
+    LIBUSBIP_RPC_USB_GET_STRING_DESCRIPTOR_ASCII,
+    LIBUSBIP_RPC_USB_CONTROL_TRANSFER
 } libusbip_rpc_t;
 
 typedef enum {
@@ -101,11 +102,16 @@ struct libusbip_rpc_info {
     int conf;
     int alt_setting;
     int length;
+    uint16_t req_type;
+    uint16_t req;
+    uint16_t len;
+    uint16_t val;
     uint16_t vid;
     uint16_t pid;
     uint16_t endpoint;
     uint16_t idx;
     uint16_t data[LIBUSBIP_MAX_DATA];
+    uint32_t timeout;
 };
 
 libusbip_rpc_t libusbip_get_rpc(int sock);
@@ -121,11 +127,12 @@ libusbip_error_t libusbip_set_interface_alt_setting(struct libusbip_connection_i
 libusbip_error_t libusbip_reset_device(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh);
 libusbip_error_t libusbip_clear_halt(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, uint16_t endpoint);
 libusbip_error_t libusbip_get_string_descriptor_ascii(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, uint16_t idx, unsigned char *data, int length);
-libusbip_error_t libusbip_control_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, uint16_t req_type, uint16_t req, uint16_t val, uint16_t idx, unsigned char *data, uint16_t length, uint32_t timeout);
 
 void libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx);
 void libusbip_get_device_list(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_list *dl);
 void libusbip_close(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh);
 void libusbip_open_device_with_vid_pid(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, uint16_t vid, uint16_t pid);
+
+int libusbip_control_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, uint16_t req_type, uint16_t req, uint16_t val, uint16_t idx, unsigned char *data, uint16_t len, uint32_t timeout);
 
 #endif /* LIBUSBIP_H */
