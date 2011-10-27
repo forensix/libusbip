@@ -21,6 +21,7 @@
 
 #define PROTO_INT_FMT                   "i"
 #define PROTO_UINT16_FMT                "v"
+#define PROTO_UINT32_FMT                "u"
 #define PROTO_UINT16_UINT16_INT_FMT     "vvi"
 #define PROTO_UINT16_ARR_FMT            "v#"
 #define PROTO_INT_UINT16_ARR_FMT        "iv#"
@@ -68,6 +69,20 @@ proto_send_uint16(uint16_t *val, int sock) {
 void
 proto_recv_uint16(uint16_t *val, int sock) {
     tpl_node *tn = tpl_map(PROTO_UINT16_FMT, val);
+    
+    proto_recv(tn, sock);
+}
+
+void
+proto_send_uint32(uint32_t *val, int sock) {
+    tpl_node *tn = tpl_map(PROTO_UINT32_FMT, val);
+    
+    proto_send(tn, sock);
+}
+
+void
+proto_recv_uint32(uint32_t *val, int sock) {
+    tpl_node *tn = tpl_map(PROTO_UINT32_FMT, val);
     
     proto_recv(tn, sock);
 }

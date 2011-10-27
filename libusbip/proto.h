@@ -24,6 +24,9 @@ void proto_recv_int(int *val, int sock);
 void proto_send_uint16(uint16_t *val, int sock);
 void proto_recv_uint16(uint16_t *val, int sock);
 
+void proto_send_uint32(uint32_t *val, int sock);
+void proto_recv_uint32(uint32_t *val, int sock);
+
 void proto_send_uint16_uint16_int(uint16_t *val1, uint16_t *val2, int *val3, int sock);
 void proto_recv_uint16_uint16_int(uint16_t *val1, uint16_t *val2, int *val3, int sock);
 

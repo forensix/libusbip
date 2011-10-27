@@ -91,7 +91,8 @@ done:
 }
 
 
-int main(int argc, char *argv[]) {
+int
+main(int argc, char *argv[]) {
     int sock, port;
     
     if (argc < 2) {

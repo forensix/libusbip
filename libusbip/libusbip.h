@@ -121,6 +121,7 @@ libusbip_error_t libusbip_set_interface_alt_setting(struct libusbip_connection_i
 libusbip_error_t libusbip_reset_device(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh);
 libusbip_error_t libusbip_clear_halt(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, uint16_t endpoint);
 libusbip_error_t libusbip_get_string_descriptor_ascii(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, uint16_t idx, unsigned char *data, int length);
+libusbip_error_t libusbip_control_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, uint16_t req_type, uint16_t req, uint16_t val, uint16_t idx, unsigned char *data, uint16_t length, uint32_t timeout);
 
 void libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx);
 void libusbip_get_device_list(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_list *dl);

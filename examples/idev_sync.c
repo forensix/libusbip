@@ -1,5 +1,5 @@
 /**
- * libusbip - rpc_client.c (Remote Procedure Call Client)
+ * libusbip - idev_sync.c (Example of async transfers.)
  * Copyright (C) 2011 Manuel Gebele
  *
  * This program is free software: you can redistribute it and/or modify
@@ -70,80 +70,73 @@ connect_or_die(const char *ip, int port) {
     return sock;
 }
 
-static void
-print_device_list(struct libusbip_device_list *dl) {
-    int max = dl->n_devices;
-    int i;
-    
-    for (i = 0; i < max; i++) {
-        struct libusbip_device *idev = &dl->devices[i];
-        
-        printf("[%d] bus_number: %u\n", i, idev->session_data);
-    }
-}
-
-static int
-print_device_descriptor(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
-                        struct libusbip_device_list *dl) {
-    libusbip_error_t error = LIBUSBIP_E_SUCCESS;
-    int max = dl->n_devices;
-    int i;
-
-    for (i = 0; i < max; i++) {
-        struct libusbip_device *idev = &dl->devices[i];
-        struct libusbip_device_descriptor dd;
-        error = libusbip_get_device_descriptor(ci, ctx, idev, &dd);
-        if (error < 0) {
-            error = LIBUSBIP_E_FAILURE;
-            goto done;
-        }
-        printf("[%d] vid:pid %04x:%04x\n", i, dd.idVendor, dd.idProduct);
-    }
-    
-done:
-    return error;
-}
-
 int
 main(int argc, char *argv[]) {
     libusbip_error_t error;
     libusbip_ctx_t ctx = LIBUSBIP_CTX_CLIENT;
     struct libusbip_connection_info ci;
-    struct libusbip_device_list dl;
+    struct libusbip_device_handle dh;
+    int vid = 0x05AC;
+    int pid = 0x1227;
+
     int port;
     
     if (argc < 3) {
-        printf("rpc_client: <server-ip> <server-port>\n");
+        printf("idev_sync: <server-ip> <server-port>\n");
         goto fail;
     }
     
     bzero(&ci, sizeof(struct libusbip_connection_info));
-    bzero(&dl, sizeof(struct libusbip_device_list));
-    
+    bzero(&dh, sizeof(struct libusbip_device_handle));
+
     // Setup session
     sscanf(argv[2], "%d", &port);
     ci.server_sock = connect_or_die(argv[1], port);
     
     error = libusbip_init(&ci, ctx);
     if (error < 0) {
-        printf("rpc_client: libusbip_init failed\n");
+        printf("idev_sync: libusbip_init failed\n");
         goto fail;
     }
     
-    libusbip_get_device_list(&ci, ctx, &dl);
-    print_device_list(&dl);
-        
-    error = print_device_descriptor(&ci, ctx, &dl);
-    if (error < 0) {
-        printf("rpc_client: libusbip_get_device_descriptor failed\n");
+    libusbip_open_device_with_vid_pid(&ci, ctx, &dh, vid, pid);
+    if (dh.session_data == 0) {
+        printf("idev_sync: No iDevice found!\n");
         goto exit_fail;
+
     }
     
+    error = libusbip_set_configuration(&ci, ctx, &dh, 1);
+    if (error < 0) {
+        printf("[*] idev_sync: libusbip_set_configuration failed\n");
+        goto close_fail;
+    }
+    
+    error = libusbip_claim_interface(&ci, ctx, &dh, 0x0);
+    if (error < 0) {
+        printf("[*] idev_sync: libusbip_claim_interface failed\n");
+        goto close_fail;
+    }
+    
+    error = libusbip_set_interface_alt_setting(&ci, ctx, &dh, 0x0, 0x0); // Dfu
+    if (error < 0) {
+        printf("[*] idev_sync: libusbip_set_interface_alt_setting failed\n");
+        goto release_fail;
+    } 
+    
+    libusbip_release_interface(&ci, ctx, &dh, 0x0);
+    libusbip_close(&ci, ctx, &dh);
     libusbip_exit(&ci, ctx);
     
     return 0;
+release_fail:
+    libusbip_release_interface(&ci, ctx, &dh, 0x0);
+close_fail:
+    libusbip_close(&ci, ctx, &dh);
 exit_fail:
     libusbip_exit(&ci, ctx);
 fail:
     return 1;
 }
+
+
