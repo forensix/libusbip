@@ -12,6 +12,7 @@
 		A5A705EE1456A817009BC808 /* error.c in Sources */ = {isa = PBXBuildFile; fileRef = A5A705EC1456A817009BC808 /* error.c */; };
 		A5A705F71456D3D4009BC808 /* warning.h in Headers */ = {isa = PBXBuildFile; fileRef = A5A705F51456D3D4009BC808 /* warning.h */; };
 		A5A705F81456D3D4009BC808 /* warning.c in Sources */ = {isa = PBXBuildFile; fileRef = A5A705F61456D3D4009BC808 /* warning.c */; };
+		A5C935CB14596CF600F38904 /* get_serial.c in Sources */ = {isa = PBXBuildFile; fileRef = A5C935CA14596CF600F38904 /* get_serial.c */; };
 		A5DE52AB14554A3E003FC684 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = A5DE529514554A3E003FC684 /* config.h */; };
 		A5DE52AC14554A3E003FC684 /* libusb.h in Headers */ = {isa = PBXBuildFile; fileRef = A5DE529614554A3E003FC684 /* libusb.h */; };
 		A5DE52AD14554A3E003FC684 /* libusbi.h in Headers */ = {isa = PBXBuildFile; fileRef = A5DE529714554A3E003FC684 /* libusbi.h */; };
@@ -46,11 +47,12 @@
 
 /* Begin PBXFileReference section */
 		A570BB1D1458142400E07198 /* search_idev.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = search_idev.c; sourceTree = "<group>"; };
+		A570BE3C1458879000E07198 /* libusbip.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libusbip.a; path = "/Users/hekt0r/Desktop/git/usbip/build/Debug-iphonesimulator/libusbip.a"; sourceTree = "<absolute>"; };
 		A5A705EB1456A817009BC808 /* error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = error.h; sourceTree = "<group>"; };
 		A5A705EC1456A817009BC808 /* error.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = error.c; sourceTree = "<group>"; };
 		A5A705F51456D3D4009BC808 /* warning.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = warning.h; sourceTree = "<group>"; };
 		A5A705F61456D3D4009BC808 /* warning.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = warning.c; sourceTree = "<group>"; };
-		A5B27D371457FC2800383ED3 /* libusbip.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libusbip.a; path = "/Users/hekt0r/Desktop/git/usbip/build/Debug-iphonesimulator/libusbip.a"; sourceTree = "<absolute>"; };
+		A5C935CA14596CF600F38904 /* get_serial.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = get_serial.c; sourceTree = "<group>"; };
 		A5DE529514554A3E003FC684 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		A5DE529614554A3E003FC684 /* libusb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libusb.h; sourceTree = "<group>"; };
 		A5DE529714554A3E003FC684 /* libusbi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libusbi.h; sourceTree = "<group>"; };
@@ -184,6 +186,7 @@
 				A5DE52D714557A10003FC684 /* rpc_server.c */,
 				A5DE52DC14557A53003FC684 /* rpc_client.c */,
 				A570BB1D1458142400E07198 /* search_idev.c */,
+				A5C935CA14596CF600F38904 /* get_serial.c */,
 			);
 			path = examples;
 			sourceTree = "<group>";
@@ -235,7 +238,7 @@
 			);
 			name = usbip;
 			productName = usbip;
-			productReference = A5B27D371457FC2800383ED3 /* libusbip.a */;
+			productReference = A570BE3C1458879000E07198 /* libusbip.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -283,6 +286,7 @@
 				A5A705EE1456A817009BC808 /* error.c in Sources */,
 				A5A705F81456D3D4009BC808 /* warning.c in Sources */,
 				A570BB1E1458142400E07198 /* search_idev.c in Sources */,
+				A5C935CB14596CF600F38904 /* get_serial.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

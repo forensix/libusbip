@@ -43,6 +43,10 @@ void error_illegal_libusbip_device_handle(const char *func) {
     fprintf(stderr, "[Error] %s - Illegal libusbip_device_handle struct.\n", func);
 }
 
+void error_illegal_buffer(const char *func) {
+    fprintf(stderr, "[Error] %s - Illegal buffer.\n", func);
+}
+
 void error_illegal_libusbip_ctx_t(const char *func) {
     fprintf(stderr, "[Error] %s - Illegal libusbip_ctx_t context.\n", func);
 }

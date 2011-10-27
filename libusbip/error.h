@@ -22,5 +22,6 @@ void error_illegal_libusbip_device(const char *func);
 void error_illegal_libusbip_device_list(const char *func);
 void error_illegal_libusbip_device_descriptor(const char *func);
 void error_illegal_libusbip_device_handle(const char *func);
+void error_illegal_buffer(const char *func);
 void error_illegal_libusbip_ctx_t(const char *func);
 void error_illegal_libusbip_rpc_t(const char *func);

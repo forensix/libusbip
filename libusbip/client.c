@@ -19,6 +19,8 @@
 #include "client.h"
 #include "proto.h"
 
+#include <string.h>
+
 libusbip_error_t
 client_usb_init(struct libusbip_connection_info *ci) {
     libusbip_error_t error;
@@ -138,16 +140,17 @@ client_usb_release_interface(struct libusbip_connection_info *ci,
 
 libusbip_error_t
 client_usb_get_configuration(struct libusbip_connection_info *ci,
-                             struct libusbip_device_handle *dh, int conf) {
+                             struct libusbip_device_handle *dh, int *conf) {
     libusbip_error_t error;
     libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_GET_CONFIGURATION;
     int sock = ci->server_sock;
     
     proto_send_rpc(&rpc, sock);
     proto_send_struct_dev_hndl(dh, sock);
-    proto_send_int(&conf, sock);
+    proto_send_int(conf, sock);
+    proto_recv_int(conf, sock);
     proto_recv_int(&error, sock);
-    
+
     return error;
 }
 
@@ -211,3 +214,45 @@ client_usb_clear_halt(struct libusbip_connection_info *ci,
     
     return error;    
 }
+
+libusbip_error_t
+client_usb_get_string_descriptor_ascii(struct libusbip_connection_info *ci,
+                                       struct libusbip_device_handle *dh,
+                                       uint16_t idx, unsigned char *data, 
+                                       int length) {
+    libusbip_error_t error;
+    libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_GET_STRING_DESCRIPTOR_ASCII;
+    int sock = ci->server_sock;
+    uint16_t buf[LIBUSBIP_MAX_DATA];
+
+    proto_send_rpc(&rpc, sock);
+    proto_send_struct_dev_hndl(dh, sock);
+    proto_send_uint16(&idx, sock);
+    proto_send_int(&length, sock);
+    proto_recv_uint16_arr(buf, sock);
+    proto_recv_int(&error, sock);
+    memcpy(data, buf, length);
+    
+    return error;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

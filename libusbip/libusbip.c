@@ -23,7 +23,7 @@
 
 #include <libusb-1.0/libusb.h>
 
-#define IS_VALID_STRUCT(__struct) (__struct != NULL)
+#define IS_VALID_OBJ(__struct) (__struct != NULL)
 #define IS_VALID_CONTEXT(__ctx) (__ctx == LIBUSBIP_CTX_CLIENT || __ctx == LIBUSBIP_CTX_SERVER)
 
 static struct libusb_context *libusbip_ctx = NULL;
@@ -37,7 +37,7 @@ libusbip_error_t
 libusbip_init(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
-    if (!IS_VALID_STRUCT(ci)) {
+    if (!IS_VALID_OBJ(ci)) {
         error_illegal_libusbip_connection_info(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
@@ -57,7 +57,7 @@ libusbip_init(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {
 
 void
 libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {    
-    if (!IS_VALID_STRUCT(ci)) {
+    if (!IS_VALID_OBJ(ci)) {
         error_illegal_libusbip_connection_info(__func__);
         return;
     }
@@ -73,11 +73,11 @@ libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {
 void
 libusbip_get_device_list(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
                          struct libusbip_device_list *dl) {
-    if (!IS_VALID_STRUCT(ci)) {
+    if (!IS_VALID_OBJ(ci)) {
         error_illegal_libusbip_connection_info(__func__);
         return;
     }
-    if (!IS_VALID_STRUCT(dl)) {
+    if (!IS_VALID_OBJ(dl)) {
         error_illegal_libusbip_device_list(__func__);
         return;
     }
@@ -96,17 +96,17 @@ libusbip_get_device_descriptor(struct libusbip_connection_info *ci, libusbip_ctx
                                struct libusbip_device_descriptor *dd) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
-    if (!IS_VALID_STRUCT(ci)) {
+    if (!IS_VALID_OBJ(ci)) {
         error_illegal_libusbip_connection_info(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
-    if (!IS_VALID_STRUCT(dev)) {
+    if (!IS_VALID_OBJ(dev)) {
         error_illegal_libusbip_device(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
-    if (!IS_VALID_STRUCT(dd)) {
+    if (!IS_VALID_OBJ(dd)) {
         error_illegal_libusbip_device_descriptor(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
@@ -129,17 +129,17 @@ libusbip_open(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
               struct libusbip_device *dev, struct libusbip_device_handle *dh) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
 
-    if (!IS_VALID_STRUCT(ci)) {
+    if (!IS_VALID_OBJ(ci)) {
         error_illegal_libusbip_connection_info(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
-    if (!IS_VALID_STRUCT(dev)) {
+    if (!IS_VALID_OBJ(dev)) {
         error_illegal_libusbip_device(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
-    if (!IS_VALID_STRUCT(dh)) {
+    if (!IS_VALID_OBJ(dh)) {
         error_illegal_libusbip_device_handle(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
@@ -160,11 +160,11 @@ libusbip_open(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
 void
 libusbip_open_device_with_vid_pid(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
                                   struct libusbip_device_handle *dh, uint16_t vid, uint16_t pid) {
-    if (!IS_VALID_STRUCT(ci)) {
+    if (!IS_VALID_OBJ(ci)) {
         error_illegal_libusbip_connection_info(__func__);
         return;
     }
-    if (!IS_VALID_STRUCT(dh)) {
+    if (!IS_VALID_OBJ(dh)) {
         error_illegal_libusbip_device_handle(__func__);
         return;
     }
@@ -180,7 +180,7 @@ libusbip_open_device_with_vid_pid(struct libusbip_connection_info *ci, libusbip_
 void
 libusbip_close(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
                struct libusbip_device_handle *dh) {
-    if (!IS_VALID_STRUCT(dh)) {
+    if (!IS_VALID_OBJ(dh)) {
         error_illegal_libusbip_device_handle(__func__);
         return;
     }
@@ -198,12 +198,12 @@ libusbip_claim_interface(struct libusbip_connection_info *ci, libusbip_ctx_t ctx
                          struct libusbip_device_handle *dh, int intf) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
-    if (!IS_VALID_STRUCT(ci)) {
+    if (!IS_VALID_OBJ(ci)) {
         error_illegal_libusbip_connection_info(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
-    if (!IS_VALID_STRUCT(dh)) {
+    if (!IS_VALID_OBJ(dh)) {
         error_illegal_libusbip_device_handle(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
@@ -226,12 +226,12 @@ libusbip_release_interface(struct libusbip_connection_info *ci, libusbip_ctx_t c
                            struct libusbip_device_handle *dh, int intf) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
-    if (!IS_VALID_STRUCT(ci)) {
+    if (!IS_VALID_OBJ(ci)) {
         error_illegal_libusbip_connection_info(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
-    if (!IS_VALID_STRUCT(dh)) {
+    if (!IS_VALID_OBJ(dh)) {
         error_illegal_libusbip_device_handle(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
@@ -251,15 +251,15 @@ libusbip_release_interface(struct libusbip_connection_info *ci, libusbip_ctx_t c
 
 libusbip_error_t
 libusbip_get_configuration(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
-                           struct libusbip_device_handle *dh, int conf) {
+                           struct libusbip_device_handle *dh, int *conf) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
-    if (!IS_VALID_STRUCT(ci)) {
+    if (!IS_VALID_OBJ(ci)) {
         error_illegal_libusbip_connection_info(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
-    if (!IS_VALID_STRUCT(dh)) {
+    if (!IS_VALID_OBJ(dh)) {
         error_illegal_libusbip_device_handle(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
@@ -282,12 +282,12 @@ libusbip_set_configuration(struct libusbip_connection_info *ci, libusbip_ctx_t c
                            struct libusbip_device_handle *dh, int conf) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
-    if (!IS_VALID_STRUCT(ci)) {
+    if (!IS_VALID_OBJ(ci)) {
         error_illegal_libusbip_connection_info(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
-    if (!IS_VALID_STRUCT(dh)) {
+    if (!IS_VALID_OBJ(dh)) {
         error_illegal_libusbip_device_handle(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
@@ -311,12 +311,12 @@ libusbip_set_interface_alt_setting(struct libusbip_connection_info *ci, libusbip
                                    int intf, int alt_setting) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
-    if (!IS_VALID_STRUCT(ci)) {
+    if (!IS_VALID_OBJ(ci)) {
         error_illegal_libusbip_connection_info(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
-    if (!IS_VALID_STRUCT(dh)) {
+    if (!IS_VALID_OBJ(dh)) {
         error_illegal_libusbip_device_handle(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
@@ -339,12 +339,12 @@ libusbip_reset_device(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
                       struct libusbip_device_handle *dh) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
-    if (!IS_VALID_STRUCT(ci)) {
+    if (!IS_VALID_OBJ(ci)) {
         error_illegal_libusbip_connection_info(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
-    if (!IS_VALID_STRUCT(dh)) {
+    if (!IS_VALID_OBJ(dh)) {
         error_illegal_libusbip_device_handle(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
@@ -367,12 +367,12 @@ libusbip_clear_halt(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
                     struct libusbip_device_handle *dh, uint16_t endpoint) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
-    if (!IS_VALID_STRUCT(ci)) {
+    if (!IS_VALID_OBJ(ci)) {
         error_illegal_libusbip_connection_info(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
-    if (!IS_VALID_STRUCT(dh)) {
+    if (!IS_VALID_OBJ(dh)) {
         error_illegal_libusbip_device_handle(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
@@ -396,6 +396,31 @@ libusbip_get_string_descriptor_ascii(struct libusbip_connection_info *ci, libusb
                                      uint16_t idx, unsigned char *data, int length) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
+    if (!IS_VALID_OBJ(ci)) {
+        error_illegal_libusbip_connection_info(__func__);
+        error = LIBUSBIP_E_FAILURE;
+        return error;
+    }
+    if (!IS_VALID_OBJ(dh)) {
+        error_illegal_libusbip_device_handle(__func__);
+        error = LIBUSBIP_E_FAILURE;
+        return error;
+    }
+    if (!IS_VALID_OBJ(data)) {
+        error_illegal_buffer(__func__);
+        error = LIBUSBIP_E_FAILURE;
+        return error;
+    }
+    
+    if (ctx == LIBUSBIP_CTX_CLIENT)
+        error = client_usb_get_string_descriptor_ascii(ci, dh, idx, data, length);
+    else if (ctx == LIBUSBIP_CTX_SERVER)
+        server_usb_get_string_descriptor_ascii(ci);
+    else {
+        error_illegal_libusbip_ctx_t(__func__);
+        error = LIBUSBIP_E_FAILURE;
+    }
+    
     return error;
 }
 
@@ -403,7 +428,7 @@ libusbip_error_t
 libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_info *ri) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
 
-    if (!IS_VALID_STRUCT(ri)) {
+    if (!IS_VALID_OBJ(ri)) {
         error_illegal_libusbip_rpc_info(__func__);
         error = LIBUSBIP_E_FAILURE;
         goto done;
@@ -446,7 +471,7 @@ libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_in
         break;
             
     case LIBUSBIP_RPC_USB_GET_CONFIGURATION:
-        error = libusbip_get_configuration(&ri->ci, ctx, &ri->dh, ri->conf);
+        error = libusbip_get_configuration(&ri->ci, ctx, &ri->dh, &ri->conf);
         break;
     
     case LIBUSBIP_RPC_USB_SET_CONFIGURATION:
@@ -464,6 +489,12 @@ libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_in
     
     case LIBUSBIP_RPC_USB_CLEAR_HALT:
         error = libusbip_clear_halt(&ri->ci, ctx, &ri->dh, ri->endpoint);
+        break;
+            
+    case LIBUSBIP_RPC_USB_GET_STRING_DESCRIPTOR_ASCII:
+        error = libusbip_get_string_descriptor_ascii(&ri->ci, ctx, &ri->dh,
+                                                     ri->idx, (unsigned char *)ri->data,
+                                                     ri->length);
         break;
             
     default:

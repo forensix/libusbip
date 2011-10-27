@@ -88,14 +88,14 @@ proto_recv_uint16_uint16_int(uint16_t *val1, uint16_t *val2, int *val3, int sock
 
 void
 proto_send_uint16_arr(uint16_t arr[], int sock) {
-    tpl_node *tn = tpl_map(PROTO_UINT16_ARR_FMT, arr);
+    tpl_node *tn = tpl_map(PROTO_UINT16_ARR_FMT, arr, LIBUSBIP_MAX_DATA);
     
     proto_send(tn, sock);
 }
 
 void
 proto_recv_uint16_arr(uint16_t arr[], int sock) {
-    tpl_node *tn = tpl_map(PROTO_UINT16_ARR_FMT, arr);
+    tpl_node *tn = tpl_map(PROTO_UINT16_ARR_FMT, arr, LIBUSBIP_MAX_DATA);
     
     proto_recv(tn, sock);    
 }
