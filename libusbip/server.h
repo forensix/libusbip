@@ -17,7 +17,6 @@
  **/
 
 #include "libusbip.h"
-
 #include <libusb-1.0/libusb.h>
 
 libusbip_rpc_t server_read_rpc(int sock);

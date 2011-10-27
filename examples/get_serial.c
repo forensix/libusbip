@@ -128,7 +128,8 @@ int main(int argc, char *argv[]) {
     
     bzero(&ci, sizeof(struct libusbip_connection_info));
     bzero(&dl, sizeof(struct libusbip_device_list));
-    bzero(&dh, sizeof(struct libusbip_device_handle));    
+    bzero(&dh, sizeof(struct libusbip_device_handle));
+    bzero(&info, sizeof(struct idev_info));
     
     // Setup session
     sscanf(argv[2], "%d", &port);

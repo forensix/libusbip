@@ -21,7 +21,6 @@
 #include "warning.h"
 
 #include <strings.h>
-
 #include "libusbi.h"
 
 /*
