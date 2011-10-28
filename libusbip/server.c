@@ -98,10 +98,10 @@ server_usb_get_device_descriptor(struct libusbip_connection_info *ci,
     ssize_t cnt;
     size_t i;
 
+    bzero(&idev, sizeof(struct libusbip_device));
     bzero(&desc, sizeof(struct libusb_device_descriptor));
     bzero(&idesc, sizeof(struct libusbip_device_descriptor));
-    bzero(&idev, sizeof(struct libusbip_device));
-
+    
     proto_recv_struct_dev(&idev, sock);
     
     cnt = libusb_get_device_list(ctx, &list);
@@ -187,7 +187,6 @@ server_usb_open(struct libusbip_connection_info *ci,
 
     /* Store handler so we can access and identify it later. */
     dh.session_data = server_hdl->dev->session_data;
-    
 free:
     libusb_free_device_list(list, 1);
 send:
@@ -387,7 +386,8 @@ server_usb_get_string_descriptor_ascii(struct libusbip_connection_info *ci) {
     proto_recv_uint16(&idx, sock);
     proto_recv_int(&lenght, sock);
     
-    error = libusb_get_string_descriptor_ascii(server_hdl, idx, (unsigned char *)buf, lenght);
+    error = libusb_get_string_descriptor_ascii(server_hdl, idx,
+                                               (unsigned char *)buf, lenght);
     if (error < 0)
         error = LIBUSBIP_E_FAILURE;
     

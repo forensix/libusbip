@@ -124,7 +124,12 @@ main(int argc, char *argv[]) {
         goto release_fail;
     } 
     
-    libusbip_release_interface(&ci, ctx, &dh, 0x0);
+    error = libusbip_release_interface(&ci, ctx, &dh, 0x0);
+    if (error < 0) {
+        printf("[*] idev_serial: libusbip_release_interface failed\n");
+        goto close_fail;
+    }
+    
     libusbip_close(&ci, ctx, &dh);
     libusbip_exit(&ci, ctx);
     

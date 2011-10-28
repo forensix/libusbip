@@ -212,7 +212,6 @@ main(int argc, char *argv[]) {
         goto close_fail;
     }
     
-    libusbip_release_interface(&ci, ctx, &dh, 0x0);
     libusbip_close(&ci, ctx, &dh);
     libusbip_exit(&ci, ctx);
     
