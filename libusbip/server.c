@@ -378,16 +378,16 @@ server_usb_get_string_descriptor_ascii(struct libusbip_connection_info *ci) {
     libusbip_error_t error;
     int sock = ci->client_sock;
     uint16_t idx, buf[LIBUSBIP_MAX_DATA];
-    int lenght;
+    int length;
     
     bzero(&dh, sizeof(struct libusbip_device_handle));
     
     proto_recv_struct_dev_hndl(&dh, sock);
     proto_recv_uint16(&idx, sock);
-    proto_recv_int(&lenght, sock);
+    proto_recv_int(&length, sock);
     
     error = libusb_get_string_descriptor_ascii(server_hdl, idx,
-                                               (unsigned char *)buf, lenght);
+                                               (unsigned char *)buf, length);
     if (error < 0)
         error = LIBUSBIP_E_FAILURE;
     
