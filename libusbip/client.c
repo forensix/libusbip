@@ -19,6 +19,7 @@
 #include "client.h"
 #include "proto.h"
 
+#include "libusbi.h"
 #include <string.h>
 
 libusbip_error_t
@@ -247,6 +248,8 @@ client_usb_control_transfer(struct libusbip_connection_info *ci,
     int sock = ci->server_sock;
     uint16_t buf[LIBUSBIP_MAX_DATA];
     
+    memcpy(buf, data, len);
+    
     proto_send_rpc(&rpc, sock);
     proto_send_struct_dev_hndl(dh, sock);
     proto_send_uint16(&req_type, sock);
@@ -258,7 +261,11 @@ client_usb_control_transfer(struct libusbip_connection_info *ci,
     proto_send_uint32(&timeout, sock);
     proto_recv_uint16_arr(buf, sock);
     proto_recv_int(&bytes, sock);
-    memcpy(data, buf, len);
+    
+    if ((req_type & LIBUSB_ENDPOINT_DIR_MASK)
+        == LIBUSB_ENDPOINT_IN) {
+        memcpy(data, buf, len);
+    }
     
     return bytes;
 }
