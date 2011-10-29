@@ -375,7 +375,7 @@ server_usb_clear_halt(struct libusbip_connection_info *ci) {
 void
 server_usb_get_string_descriptor_ascii(struct libusbip_connection_info *ci) {
     struct libusbip_device_handle dh;
-    libusbip_error_t error;
+    int bytes;
     int sock = ci->client_sock;
     uint16_t idx, buf[LIBUSBIP_MAX_DATA];
     int length;
@@ -386,13 +386,13 @@ server_usb_get_string_descriptor_ascii(struct libusbip_connection_info *ci) {
     proto_recv_uint16(&idx, sock);
     proto_recv_int(&length, sock);
     
-    error = libusb_get_string_descriptor_ascii(server_hdl, idx,
+    bytes = libusb_get_string_descriptor_ascii(server_hdl, idx,
                                                (unsigned char *)buf, length);
-    if (error < 0)
-        error = LIBUSBIP_E_FAILURE;
+    if (bytes < 0)
+        bytes = LIBUSBIP_E_FAILURE;
     
     proto_send_uint16_arr(buf, sock);
-    proto_send_int(&error, sock);
+    proto_send_int(&bytes, sock);
 }
 
 void
@@ -417,6 +417,37 @@ server_usb_control_transfer(struct libusbip_connection_info *ci) {
     bytes = libusb_control_transfer(server_hdl, req_type, req, val, idx,
                                     (unsigned char *)buf, len, timeout);
     
+    if (bytes < 0)
+        bytes = LIBUSBIP_E_FAILURE;
+    
     proto_send_uint16_arr(buf, sock);
+    proto_send_int(&bytes, sock);
+}
+
+void
+server_usb_bulk_transfer(struct libusbip_connection_info *ci) {
+    struct libusbip_device_handle dh;
+    int bytes;
+    int sock = ci->client_sock;
+    int length, transferred;
+    uint16_t endpoint, buf[LIBUSBIP_MAX_DATA];
+    uint32_t timeout;
+    
+    bzero(&dh, sizeof(struct libusbip_device_handle));
+    
+    proto_recv_struct_dev_hndl(&dh, sock);
+    proto_recv_uint16(&endpoint, sock);
+    proto_recv_uint16_arr(buf, sock);
+    proto_recv_int(&length, sock);
+    proto_recv_uint32(&timeout, sock);
+    
+    bytes = libusb_bulk_transfer(server_hdl, endpoint, (unsigned char *)buf,
+                                 length, &transferred, timeout);
+    
+    if (bytes < 0)
+        bytes = LIBUSBIP_E_FAILURE;
+    
+    proto_send_uint16_arr(buf, sock);
+    proto_send_int(&transferred, sock);
     proto_send_int(&bytes, sock);
 }

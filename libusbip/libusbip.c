@@ -391,7 +391,7 @@ libusbip_clear_halt(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
     return error;
 }
 
-libusbip_error_t
+int
 libusbip_get_string_descriptor_ascii(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
                                      struct libusbip_device_handle *dh,
                                      uint16_t idx, unsigned char *data, int length) {
@@ -435,7 +435,7 @@ libusbip_control_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ct
                           struct libusbip_device_handle *dh, uint16_t req_type,
                           uint16_t req, uint16_t val, uint16_t idx,
                           unsigned char *data, uint16_t len, uint32_t timeout) {    
-    int bytes_transfered = 0;
+    int bytes_transferred = 0;
     
     if (!IS_VALID_OBJ(ci)) {
         error_illegal_libusbip_connection_info(__func__);
@@ -455,7 +455,7 @@ libusbip_control_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ct
     }
     
     if (ctx == LIBUSBIP_CTX_CLIENT)
-        bytes_transfered = client_usb_control_transfer(ci, dh, req_type, req, val,
+        bytes_transferred = client_usb_control_transfer(ci, dh, req_type, req, val,
                                                        idx, data, len, timeout);
     else if (ctx == LIBUSBIP_CTX_SERVER)
         server_usb_control_transfer(ci);
@@ -464,7 +464,43 @@ libusbip_control_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ct
         return LIBUSBIP_E_FAILURE;
     }
     
-    return bytes_transfered;
+    return bytes_transferred;
+}
+
+int
+libusbip_bulk_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+                       struct libusbip_device_handle *dh, uint16_t endpoint,
+                       unsigned char *data, int length, int *transferred, uint32_t timeout) {
+    int bytes_transferred = 0;
+    
+    if (!IS_VALID_OBJ(ci)) {
+        error_illegal_libusbip_connection_info(__func__);
+        return LIBUSBIP_E_FAILURE;
+    }
+    if (!IS_VALID_OBJ(dh)) {
+        error_illegal_libusbip_device_handle(__func__);
+        return LIBUSBIP_E_FAILURE;
+    }
+    if (!IS_VALID_OBJ(data)) {
+        error_illegal_buffer(__func__);
+        return LIBUSBIP_E_FAILURE;
+    }
+    if (ctx == LIBUSBIP_CTX_CLIENT && !IS_VALID_LENGTH(length)) {
+        error_illegal_length(__func__);
+        return LIBUSBIP_E_FAILURE;
+    }
+    
+    if (ctx == LIBUSBIP_CTX_CLIENT)
+        bytes_transferred = client_usb_bulk_transfer(ci, dh, endpoint, data,
+                                                     length, transferred, timeout);
+    else if (ctx == LIBUSBIP_CTX_SERVER)
+        server_usb_bulk_transfer(ci);
+    else {
+        error_illegal_libusbip_ctx_t(__func__);
+        return LIBUSBIP_E_FAILURE;
+    }
+    
+    return bytes_transferred;
 }
 
 libusbip_error_t
@@ -545,6 +581,13 @@ libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_in
         return libusbip_control_transfer(&ri->ci, ctx, &ri->dh, ri->req_type,
                                          ri->req, ri->val, ri->idx, (unsigned char *)ri->data,
                                          ri->len, ri->timeout);
+        break; /* NEVER_REACHED */
+            
+    case LIBUSBIP_RPC_USB_BULK_TRANSFER:
+        /* NOTE: Not really an error. */
+        return libusbip_bulk_transfer(&ri->ci, ctx, &ri->dh, ri->endpoint,
+                                      (unsigned char *)ri->data, ri->length,
+                                      &ri->transferred, ri->timeout);
         break; /* NEVER_REACHED */
             
     default:

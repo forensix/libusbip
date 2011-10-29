@@ -216,12 +216,12 @@ client_usb_clear_halt(struct libusbip_connection_info *ci,
     return error;    
 }
 
-libusbip_error_t
+int
 client_usb_get_string_descriptor_ascii(struct libusbip_connection_info *ci,
                                        struct libusbip_device_handle *dh,
                                        uint16_t idx, unsigned char *data, 
                                        int length) {
-    libusbip_error_t error;
+    int bytes;
     libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_GET_STRING_DESCRIPTOR_ASCII;
     int sock = ci->server_sock;
     uint16_t buf[LIBUSBIP_MAX_DATA];
@@ -231,10 +231,10 @@ client_usb_get_string_descriptor_ascii(struct libusbip_connection_info *ci,
     proto_send_uint16(&idx, sock);
     proto_send_int(&length, sock);
     proto_recv_uint16_arr(buf, sock);
-    proto_recv_int(&error, sock);
+    proto_recv_int(&bytes, sock);
     memcpy(data, buf, length);
     
-    return error;
+    return bytes;
 }
 
 int
@@ -265,6 +265,37 @@ client_usb_control_transfer(struct libusbip_connection_info *ci,
     if ((req_type & LIBUSB_ENDPOINT_DIR_MASK)
         == LIBUSB_ENDPOINT_IN) {
         memcpy(data, buf, len);
+    }
+    
+    return bytes;
+}
+
+int
+client_usb_bulk_transfer(struct libusbip_connection_info *ci,
+                         struct libusbip_device_handle *dh, uint16_t endpoint,
+                         unsigned char *data, int length, int *transferred,
+                         uint32_t timeout) {
+    int bytes;
+    libusbip_rpc_t rpc = LIBUSBIP_RPC_USB_BULK_TRANSFER;
+    int sock = ci->server_sock;
+    uint16_t buf[LIBUSBIP_MAX_DATA];
+    
+    memcpy(buf, data, length);
+    
+    proto_send_rpc(&rpc, sock);
+    proto_send_struct_dev_hndl(dh, sock);
+    proto_send_uint16(&endpoint, sock);
+    proto_send_uint16_arr(buf, sock);
+    proto_send_int(&length, sock);
+    proto_send_uint32(&timeout, sock);
+    proto_recv_uint16_arr(buf, sock);
+    proto_recv_int(transferred, sock);
+    proto_recv_int(&bytes, sock);
+    
+    // FIXME: I don't know if this is correct.
+    if ((endpoint & LIBUSB_ENDPOINT_DIR_MASK)
+        == LIBUSB_ENDPOINT_IN) {
+        memcpy(data, buf, length);
     }
     
     return bytes;

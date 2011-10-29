@@ -28,11 +28,12 @@ libusbip_error_t client_usb_set_configuration(struct libusbip_connection_info *c
 libusbip_error_t client_usb_set_interface_alt_setting(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh, int intf, int alt_setting);
 libusbip_error_t client_usb_reset_device(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh);
 libusbip_error_t client_usb_clear_halt(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh, uint16_t endpoint);
-libusbip_error_t client_usb_get_string_descriptor_ascii(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh, uint16_t idx, unsigned char *data, int length);
 
 void client_usb_exit(struct libusbip_connection_info *ci);
 void client_usb_close(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh);
 void client_usb_get_device_list(struct libusbip_connection_info *ci, struct libusbip_device_list *dl);
 void client_usb_open_device_with_vid_pid(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh, uint16_t vid, uint16_t pid);
 
+int client_usb_get_string_descriptor_ascii(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh, uint16_t idx, unsigned char *data, int length);
 int client_usb_control_transfer(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh, uint16_t req_type, uint16_t req, uint16_t val, uint16_t idx, unsigned char *data, uint16_t len, uint32_t timeout);
+int client_usb_bulk_transfer(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh, uint16_t endpoint, unsigned char *data, int length, int *transferred, uint32_t timeout);
