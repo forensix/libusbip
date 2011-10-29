@@ -24,7 +24,8 @@
 #include <libusb-1.0/libusb.h>
 
 #define IS_VALID_OBJ(__struct) (__struct != NULL)
-#define IS_VALID_CONTEXT(__ctx) (__ctx == LIBUSBIP_CTX_CLIENT || __ctx == LIBUSBIP_CTX_SERVER)
+#define IS_VALID_LENGTH(__length) (__length > 0 && __length < LIBUSBIP_MAX_DATA)
+#define IS_VALID_CONTEXT(__ctx) (__ctx == LIBUSBIP_CTX_CLIENT || __ctx == LIBUSBIP_CTX_SERVER) // Not used yet
 
 static struct libusb_context *libusbip_ctx = NULL;
 
@@ -411,6 +412,11 @@ libusbip_get_string_descriptor_ascii(struct libusbip_connection_info *ci, libusb
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
+    if (!IS_VALID_LENGTH(length)) {
+        error_illegal_length(__func__);
+        error = LIBUSBIP_E_FAILURE;
+        return error;
+    }
     
     if (ctx == LIBUSBIP_CTX_CLIENT)
         error = client_usb_get_string_descriptor_ascii(ci, dh, idx, data, length);
@@ -441,6 +447,10 @@ libusbip_control_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ct
     }
     if (!IS_VALID_OBJ(data)) {
         error_illegal_buffer(__func__);
+        return LIBUSBIP_E_FAILURE;
+    }
+    if (!IS_VALID_LENGTH(len)) {
+        error_illegal_length(__func__);
         return LIBUSBIP_E_FAILURE;
     }
     

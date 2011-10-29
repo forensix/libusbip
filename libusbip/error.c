@@ -47,6 +47,10 @@ void error_illegal_buffer(const char *func) {
     fprintf(stderr, "[Error] %s - Illegal buffer.\n", func);
 }
 
+void error_illegal_length(const char *func) {
+    fprintf(stderr, "[Error] %s - Illegal length.\n", func);
+}
+
 void error_illegal_libusbip_ctx_t(const char *func) {
     fprintf(stderr, "[Error] %s - Illegal libusbip_ctx_t context.\n", func);
 }
