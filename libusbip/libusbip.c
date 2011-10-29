@@ -412,7 +412,7 @@ libusbip_get_string_descriptor_ascii(struct libusbip_connection_info *ci, libusb
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
-    if (!IS_VALID_LENGTH(length)) {
+    if (ctx == LIBUSBIP_CTX_CLIENT && !IS_VALID_LENGTH(length)) {
         error_illegal_length(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
@@ -449,7 +449,7 @@ libusbip_control_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ct
         error_illegal_buffer(__func__);
         return LIBUSBIP_E_FAILURE;
     }
-    if (!IS_VALID_LENGTH(len)) {
+    if (ctx == LIBUSBIP_CTX_CLIENT && !IS_VALID_LENGTH(len)) {
         error_illegal_length(__func__);
         return LIBUSBIP_E_FAILURE;
     }
