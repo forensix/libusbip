@@ -71,14 +71,13 @@ connect_or_die(const char *ip, int port) {
 }
 
 static void
-send_cmd(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
-         struct libusbip_device_handle *dh, char *cmd) {
+send_cmd(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh, char *cmd) {
     unsigned int length = strlen(cmd);
 	if (length >= 0x100) {
 		length = 0xFF;
 	}
     
-    libusbip_control_transfer(ci, ctx, dh, 0x40, 0, 0, 0, cmd, length + 1, 1000);
+    libusbip_control_transfer(ci, dh, 0x40, 0, 0, 0, cmd, length + 1, 1000);
 
     printf("[*] idev_cmd: sent command '%s'\n", cmd);
 }
@@ -86,7 +85,6 @@ send_cmd(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
 int
 main(int argc, char *argv[]) {
     libusbip_error_t error;
-    libusbip_ctx_t ctx = LIBUSBIP_CTX_CLIENT;
     struct libusbip_connection_info ci;
     struct libusbip_device_handle dh;
     int vid = 0x05AC;
@@ -105,58 +103,57 @@ main(int argc, char *argv[]) {
     // Setup session
     sscanf(argv[2], "%d", &port);
     ci.server_sock = connect_or_die(argv[1], port);
+    ci.ctx = LIBUSBIP_CTX_CLIENT;
     
-    error = libusbip_init(&ci, ctx);
+    error = libusbip_init(&ci);
     if (error < 0) {
         printf("idev_cmd: libusbip_init failed\n");
         goto fail;
     }
     
-    libusbip_open_device_with_vid_pid(&ci, ctx, &dh, vid, pid);
+    libusbip_open_device_with_vid_pid(&ci, &dh, vid, pid);
     if (dh.session_data == 0) {
         printf("idev_cmd: No iDevice found!\n");
         goto exit_fail;
 
     }
     
-    error = libusbip_set_configuration(&ci, ctx, &dh, 1);
+    error = libusbip_set_configuration(&ci, &dh, 1);
     if (error < 0) {
         printf("[*] idev_cmd: libusbip_set_configuration failed\n");
         goto close_fail;
     }
     
-    error = libusbip_claim_interface(&ci, ctx, &dh, 1);
+    error = libusbip_claim_interface(&ci, &dh, 1);
     if (error < 0) {
         printf("[*] idev_cmd: libusbip_claim_interface failed\n");
         goto close_fail;
     }
     
-    error = libusbip_set_interface_alt_setting(&ci, ctx, &dh, 1, 1); // kRecoveryMode2
+    error = libusbip_set_interface_alt_setting(&ci, &dh, 1, 1); // kRecoveryMode2
     if (error < 0) {
         printf("[*] idev_cmd: libusbip_set_interface_alt_setting failed\n");
         goto release_fail;
     } 
     
-    error = libusbip_release_interface(&ci, ctx, &dh, 1);
+    error = libusbip_release_interface(&ci, &dh, 1);
     if (error < 0) {
         printf("[*] idev_cmd: libusbip_release_interface failed\n");
         goto close_fail;
     }
     
-    send_cmd(&ci, ctx, &dh, argv[3]);
+    send_cmd(&ci, &dh, argv[3]);
     
-    libusbip_close(&ci, ctx, &dh);
-    libusbip_exit(&ci, ctx);
+    libusbip_close(&ci, &dh);
+    libusbip_exit(&ci);
     
     return 0;
 release_fail:
-    libusbip_release_interface(&ci, ctx, &dh, 1);
+    libusbip_release_interface(&ci, &dh, 1);
 close_fail:
-    libusbip_close(&ci, ctx, &dh);
+    libusbip_close(&ci, &dh);
 exit_fail:
-    libusbip_exit(&ci, ctx);
+    libusbip_exit(&ci);
 fail:
     return 1;
 }
-
-

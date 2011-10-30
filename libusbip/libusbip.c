@@ -35,7 +35,7 @@ libusbip_get_rpc(int sock) {
 }
 
 libusbip_error_t
-libusbip_init(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {
+libusbip_init(struct libusbip_connection_info *ci) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
     if (!IS_VALID_OBJ(ci)) {
@@ -44,9 +44,9 @@ libusbip_init(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {
         return error;
     }
     
-    if (ctx == LIBUSBIP_CTX_CLIENT)
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT)
         error = client_usb_init(ci);
-    else if (ctx == LIBUSBIP_CTX_SERVER)
+    else if (ci->ctx == LIBUSBIP_CTX_SERVER)
         server_usb_init(ci, &libusbip_ctx);
     else {
         error_illegal_libusbip_ctx_t(__func__);
@@ -57,22 +57,22 @@ libusbip_init(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {
 }
 
 void
-libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx) {    
+libusbip_exit(struct libusbip_connection_info *ci) {    
     if (!IS_VALID_OBJ(ci)) {
         error_illegal_libusbip_connection_info(__func__);
         return;
     }
     
-    if (ctx == LIBUSBIP_CTX_CLIENT)
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT)
         client_usb_exit(ci);
-    else if (ctx == LIBUSBIP_CTX_SERVER)
+    else if (ci->ctx == LIBUSBIP_CTX_SERVER)
         server_usb_exit(libusbip_ctx);
     else
         error_illegal_libusbip_ctx_t(__func__);
 }
 
 void
-libusbip_get_device_list(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+libusbip_get_device_list(struct libusbip_connection_info *ci,
                          struct libusbip_device_list *dl) {
     if (!IS_VALID_OBJ(ci)) {
         error_illegal_libusbip_connection_info(__func__);
@@ -83,16 +83,16 @@ libusbip_get_device_list(struct libusbip_connection_info *ci, libusbip_ctx_t ctx
         return;
     }
     
-    if (ctx == LIBUSBIP_CTX_CLIENT)
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT)
         client_usb_get_device_list(ci, dl);
-    else if (ctx == LIBUSBIP_CTX_SERVER)
+    else if (ci->ctx == LIBUSBIP_CTX_SERVER)
         server_usb_get_device_list(ci, libusbip_ctx);
     else
         error_illegal_libusbip_ctx_t(__func__);
 }
 
 libusbip_error_t
-libusbip_get_device_descriptor(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+libusbip_get_device_descriptor(struct libusbip_connection_info *ci,
                                struct libusbip_device *dev,
                                struct libusbip_device_descriptor *dd) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
@@ -113,9 +113,9 @@ libusbip_get_device_descriptor(struct libusbip_connection_info *ci, libusbip_ctx
         return error;
     }
     
-    if (ctx == LIBUSBIP_CTX_CLIENT)
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT)
         error = client_usb_get_device_descriptor(ci, dev, dd);
-    else if (ctx == LIBUSBIP_CTX_SERVER)
+    else if (ci->ctx == LIBUSBIP_CTX_SERVER)
         server_usb_get_device_descriptor(ci, libusbip_ctx);
     else {
         error_illegal_libusbip_ctx_t(__func__);
@@ -126,7 +126,7 @@ libusbip_get_device_descriptor(struct libusbip_connection_info *ci, libusbip_ctx
 }
 
 libusbip_error_t
-libusbip_open(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+libusbip_open(struct libusbip_connection_info *ci,
               struct libusbip_device *dev, struct libusbip_device_handle *dh) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
 
@@ -146,9 +146,9 @@ libusbip_open(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
         return error;
     }
     
-    if (ctx == LIBUSBIP_CTX_CLIENT)
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT)
         error = client_usb_open(ci, dev, dh);
-    else if (ctx == LIBUSBIP_CTX_SERVER)
+    else if (ci->ctx == LIBUSBIP_CTX_SERVER)
         server_usb_open(ci, libusbip_ctx);
     else {
         error_illegal_libusbip_ctx_t(__func__);
@@ -159,8 +159,9 @@ libusbip_open(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
 }
 
 void
-libusbip_open_device_with_vid_pid(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
-                                  struct libusbip_device_handle *dh, uint16_t vid, uint16_t pid) {
+libusbip_open_device_with_vid_pid(struct libusbip_connection_info *ci,
+                                  struct libusbip_device_handle *dh,
+                                  uint16_t vid, uint16_t pid) {
     if (!IS_VALID_OBJ(ci)) {
         error_illegal_libusbip_connection_info(__func__);
         return;
@@ -170,32 +171,36 @@ libusbip_open_device_with_vid_pid(struct libusbip_connection_info *ci, libusbip_
         return;
     }
     
-    if (ctx == LIBUSBIP_CTX_CLIENT)
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT)
         client_usb_open_device_with_vid_pid(ci, dh, vid, pid);
-    else if (ctx == LIBUSBIP_CTX_SERVER)
+    else if (ci->ctx == LIBUSBIP_CTX_SERVER)
         server_usb_open_device_with_vid_pid(ci, libusbip_ctx);
     else
         error_illegal_libusbip_ctx_t(__func__);
 }
 
 void
-libusbip_close(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+libusbip_close(struct libusbip_connection_info *ci,
                struct libusbip_device_handle *dh) {
+    if (!IS_VALID_OBJ(ci)) {
+        error_illegal_libusbip_connection_info(__func__);
+        return;
+    }
     if (!IS_VALID_OBJ(dh)) {
         error_illegal_libusbip_device_handle(__func__);
         return;
     }
     
-    if (ctx == LIBUSBIP_CTX_CLIENT)
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT)
         client_usb_close(ci, dh);
-    else if (ctx == LIBUSBIP_CTX_SERVER)
+    else if (ci->ctx == LIBUSBIP_CTX_SERVER)
         server_usb_close(ci);
     else
         error_illegal_libusbip_ctx_t(__func__);
 }
 
 libusbip_error_t
-libusbip_claim_interface(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+libusbip_claim_interface(struct libusbip_connection_info *ci,
                          struct libusbip_device_handle *dh, int intf) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
@@ -210,9 +215,9 @@ libusbip_claim_interface(struct libusbip_connection_info *ci, libusbip_ctx_t ctx
         return error;
     }
     
-    if (ctx == LIBUSBIP_CTX_CLIENT)
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT)
         error = client_usb_claim_interface(ci, dh, intf);
-    else if (ctx == LIBUSBIP_CTX_SERVER)
+    else if (ci->ctx == LIBUSBIP_CTX_SERVER)
         server_usb_claim_interface(ci);
     else {
         error_illegal_libusbip_ctx_t(__func__);
@@ -223,7 +228,7 @@ libusbip_claim_interface(struct libusbip_connection_info *ci, libusbip_ctx_t ctx
 }
 
 libusbip_error_t
-libusbip_release_interface(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+libusbip_release_interface(struct libusbip_connection_info *ci,
                            struct libusbip_device_handle *dh, int intf) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
@@ -238,9 +243,9 @@ libusbip_release_interface(struct libusbip_connection_info *ci, libusbip_ctx_t c
         return error;
     }
     
-    if (ctx == LIBUSBIP_CTX_CLIENT)
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT)
         error = client_usb_release_interface(ci, dh, intf);
-    else if (ctx == LIBUSBIP_CTX_SERVER)
+    else if (ci->ctx == LIBUSBIP_CTX_SERVER)
         server_usb_release_interface(ci);
     else {
         error_illegal_libusbip_ctx_t(__func__);
@@ -251,7 +256,7 @@ libusbip_release_interface(struct libusbip_connection_info *ci, libusbip_ctx_t c
 }
 
 libusbip_error_t
-libusbip_get_configuration(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+libusbip_get_configuration(struct libusbip_connection_info *ci,
                            struct libusbip_device_handle *dh, int *conf) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
@@ -266,9 +271,9 @@ libusbip_get_configuration(struct libusbip_connection_info *ci, libusbip_ctx_t c
         return error;
     }
     
-    if (ctx == LIBUSBIP_CTX_CLIENT)
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT)
         error = client_usb_get_configuration(ci, dh, conf);
-    else if (ctx == LIBUSBIP_CTX_SERVER)
+    else if (ci->ctx == LIBUSBIP_CTX_SERVER)
         server_usb_get_configuration(ci);
     else {
         error_illegal_libusbip_ctx_t(__func__);
@@ -279,7 +284,7 @@ libusbip_get_configuration(struct libusbip_connection_info *ci, libusbip_ctx_t c
 }
 
 libusbip_error_t
-libusbip_set_configuration(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+libusbip_set_configuration(struct libusbip_connection_info *ci,
                            struct libusbip_device_handle *dh, int conf) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
@@ -294,9 +299,9 @@ libusbip_set_configuration(struct libusbip_connection_info *ci, libusbip_ctx_t c
         return error;
     }
     
-    if (ctx == LIBUSBIP_CTX_CLIENT)
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT)
         error = client_usb_set_configuration(ci, dh, conf);
-    else if (ctx == LIBUSBIP_CTX_SERVER)
+    else if (ci->ctx == LIBUSBIP_CTX_SERVER)
         server_usb_set_configuration(ci);
     else {
         error_illegal_libusbip_ctx_t(__func__);
@@ -307,7 +312,7 @@ libusbip_set_configuration(struct libusbip_connection_info *ci, libusbip_ctx_t c
 }
 
 libusbip_error_t
-libusbip_set_interface_alt_setting(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+libusbip_set_interface_alt_setting(struct libusbip_connection_info *ci,
                                    struct libusbip_device_handle *dh,
                                    int intf, int alt_setting) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
@@ -323,9 +328,9 @@ libusbip_set_interface_alt_setting(struct libusbip_connection_info *ci, libusbip
         return error;
     }
     
-    if (ctx == LIBUSBIP_CTX_CLIENT)
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT)
         error = client_usb_set_interface_alt_setting(ci, dh, intf, alt_setting);
-    else if (ctx == LIBUSBIP_CTX_SERVER)
+    else if (ci->ctx == LIBUSBIP_CTX_SERVER)
         server_usb_set_interface_alt_setting(ci);
     else {
         error_illegal_libusbip_ctx_t(__func__);
@@ -336,7 +341,7 @@ libusbip_set_interface_alt_setting(struct libusbip_connection_info *ci, libusbip
 }
 
 libusbip_error_t
-libusbip_reset_device(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+libusbip_reset_device(struct libusbip_connection_info *ci,
                       struct libusbip_device_handle *dh) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
@@ -351,9 +356,9 @@ libusbip_reset_device(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
         return error;
     }
     
-    if (ctx == LIBUSBIP_CTX_CLIENT)
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT)
         error = client_usb_reset_device(ci, dh);
-    else if (ctx == LIBUSBIP_CTX_SERVER)
+    else if (ci->ctx == LIBUSBIP_CTX_SERVER)
         server_usb_reset_device(ci);
     else {
         error_illegal_libusbip_ctx_t(__func__);
@@ -364,7 +369,7 @@ libusbip_reset_device(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
 }
 
 libusbip_error_t
-libusbip_clear_halt(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+libusbip_clear_halt(struct libusbip_connection_info *ci,
                     struct libusbip_device_handle *dh, uint16_t endpoint) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     
@@ -379,9 +384,9 @@ libusbip_clear_halt(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
         return error;
     }
     
-    if (ctx == LIBUSBIP_CTX_CLIENT)
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT)
         error = client_usb_clear_halt(ci, dh, endpoint);
-    else if (ctx == LIBUSBIP_CTX_SERVER)
+    else if (ci->ctx == LIBUSBIP_CTX_SERVER)
         server_usb_clear_halt(ci);
     else {
         error_illegal_libusbip_ctx_t(__func__);
@@ -392,7 +397,7 @@ libusbip_clear_halt(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
 }
 
 int
-libusbip_get_string_descriptor_ascii(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+libusbip_get_string_descriptor_ascii(struct libusbip_connection_info *ci,
                                      struct libusbip_device_handle *dh,
                                      uint16_t idx, unsigned char *data, int length) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
@@ -412,15 +417,15 @@ libusbip_get_string_descriptor_ascii(struct libusbip_connection_info *ci, libusb
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
-    if (ctx == LIBUSBIP_CTX_CLIENT && !IS_VALID_LENGTH(length)) {
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT && !IS_VALID_LENGTH(length)) {
         error_illegal_length(__func__);
         error = LIBUSBIP_E_FAILURE;
         return error;
     }
     
-    if (ctx == LIBUSBIP_CTX_CLIENT)
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT)
         error = client_usb_get_string_descriptor_ascii(ci, dh, idx, data, length);
-    else if (ctx == LIBUSBIP_CTX_SERVER)
+    else if (ci->ctx == LIBUSBIP_CTX_SERVER)
         server_usb_get_string_descriptor_ascii(ci);
     else {
         error_illegal_libusbip_ctx_t(__func__);
@@ -431,7 +436,7 @@ libusbip_get_string_descriptor_ascii(struct libusbip_connection_info *ci, libusb
 }
 
 int
-libusbip_control_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+libusbip_control_transfer(struct libusbip_connection_info *ci,
                           struct libusbip_device_handle *dh, uint16_t req_type,
                           uint16_t req, uint16_t val, uint16_t idx,
                           unsigned char *data, uint16_t len, uint32_t timeout) {    
@@ -449,15 +454,15 @@ libusbip_control_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ct
         error_illegal_buffer(__func__);
         return LIBUSBIP_E_FAILURE;
     }
-    if (ctx == LIBUSBIP_CTX_CLIENT && !IS_VALID_LENGTH(len)) {
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT && !IS_VALID_LENGTH(len)) {
         error_illegal_length(__func__);
         return LIBUSBIP_E_FAILURE;
     }
     
-    if (ctx == LIBUSBIP_CTX_CLIENT)
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT)
         bytes_transferred = client_usb_control_transfer(ci, dh, req_type, req, val,
                                                        idx, data, len, timeout);
-    else if (ctx == LIBUSBIP_CTX_SERVER)
+    else if (ci->ctx == LIBUSBIP_CTX_SERVER)
         server_usb_control_transfer(ci);
     else {
         error_illegal_libusbip_ctx_t(__func__);
@@ -468,7 +473,7 @@ libusbip_control_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ct
 }
 
 int
-libusbip_bulk_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+libusbip_bulk_transfer(struct libusbip_connection_info *ci,
                        struct libusbip_device_handle *dh, uint16_t endpoint,
                        unsigned char *data, int length, int *transferred, uint32_t timeout) {
     int bytes_transferred = 0;
@@ -485,15 +490,15 @@ libusbip_bulk_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
         error_illegal_buffer(__func__);
         return LIBUSBIP_E_FAILURE;
     }
-    if (ctx == LIBUSBIP_CTX_CLIENT && !IS_VALID_LENGTH(length)) {
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT && !IS_VALID_LENGTH(length)) {
         error_illegal_length(__func__);
         return LIBUSBIP_E_FAILURE;
     }
     
-    if (ctx == LIBUSBIP_CTX_CLIENT)
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT)
         bytes_transferred = client_usb_bulk_transfer(ci, dh, endpoint, data,
                                                      length, transferred, timeout);
-    else if (ctx == LIBUSBIP_CTX_SERVER)
+    else if (ci->ctx == LIBUSBIP_CTX_SERVER)
         server_usb_bulk_transfer(ci);
     else {
         error_illegal_libusbip_ctx_t(__func__);
@@ -504,7 +509,7 @@ libusbip_bulk_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
 }
 
 libusbip_error_t
-libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_info *ri) {
+libusbip_rpc_call(libusbip_rpc_t rpc, struct libusbip_rpc_info *ri) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
 
     if (!IS_VALID_OBJ(ri)) {
@@ -515,77 +520,77 @@ libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_in
     
     switch (rpc) {
     case LIBUSBIP_RPC_USB_INIT:
-        error = libusbip_init(&ri->ci, ctx);
+        error = libusbip_init(&ri->ci);
         break;
             
     case LIBUSBIP_RPC_USB_EXIT:
-        libusbip_exit(&ri->ci, ctx);
+        libusbip_exit(&ri->ci);
         break;
     case LIBUSBIP_RPC_USB_GET_DEVICE_LIST:
-        libusbip_get_device_list(&ri->ci, ctx, &ri->dl);
+        libusbip_get_device_list(&ri->ci, &ri->dl);
         break;
             
     case LIBUSBIP_RPC_USB_GET_DEVICE_DESCRIPTOR:
-        error= libusbip_get_device_descriptor(&ri->ci, ctx, &ri->dev, &ri->dd);
+        error= libusbip_get_device_descriptor(&ri->ci, &ri->dev, &ri->dd);
         break;
             
     case LIBUSBIP_RPC_USB_OPEN:
-        error = libusbip_open(&ri->ci, ctx, &ri->dev, &ri->dh);
+        error = libusbip_open(&ri->ci, &ri->dev, &ri->dh);
         break;
             
     case LIBUSBIP_RPC_USB_OPEN_DEVICE_WITH_VID_PID:
-        libusbip_open_device_with_vid_pid(&ri->ci, ctx, &ri->dh, ri->vid, ri->pid);
+        libusbip_open_device_with_vid_pid(&ri->ci, &ri->dh, ri->vid, ri->pid);
         break;
             
     case LIBUSBIP_RPC_USB_CLOSE:
-        libusbip_close(&ri->ci, ctx, &ri->dh);
+        libusbip_close(&ri->ci, &ri->dh);
         break;
             
     case LIBUSBIP_RPC_USB_CLAIM_INTERFACE:
-        error = libusbip_claim_interface(&ri->ci, ctx, &ri->dh, ri->intf);
+        error = libusbip_claim_interface(&ri->ci, &ri->dh, ri->intf);
         break;
             
     case LIBUSBIP_RPC_USB_RELEASE_INTERFACE:
-        error = libusbip_release_interface(&ri->ci, ctx, &ri->dh, ri->intf);
+        error = libusbip_release_interface(&ri->ci, &ri->dh, ri->intf);
         break;
             
     case LIBUSBIP_RPC_USB_GET_CONFIGURATION:
-        error = libusbip_get_configuration(&ri->ci, ctx, &ri->dh, &ri->conf);
+        error = libusbip_get_configuration(&ri->ci, &ri->dh, &ri->conf);
         break;
     
     case LIBUSBIP_RPC_USB_SET_CONFIGURATION:
-        error = libusbip_set_configuration(&ri->ci, ctx, &ri->dh, ri->conf);
+        error = libusbip_set_configuration(&ri->ci, &ri->dh, ri->conf);
         break;            
     
     case LIBUSBIP_RPC_USB_SET_INTERFACE_ALT_SETTING:
-        error = libusbip_set_interface_alt_setting(&ri->ci, ctx, &ri->dh, ri->intf,
+        error = libusbip_set_interface_alt_setting(&ri->ci, &ri->dh, ri->intf,
                                                    ri->alt_setting);
         break;        
     
     case LIBUSBIP_RPC_USB_RESET_DEVICE:
-        error = libusbip_reset_device(&ri->ci, ctx, &ri->dh);
+        error = libusbip_reset_device(&ri->ci, &ri->dh);
         break;
     
     case LIBUSBIP_RPC_USB_CLEAR_HALT:
-        error = libusbip_clear_halt(&ri->ci, ctx, &ri->dh, ri->endpoint);
+        error = libusbip_clear_halt(&ri->ci, &ri->dh, ri->endpoint);
         break;
             
     case LIBUSBIP_RPC_USB_GET_STRING_DESCRIPTOR_ASCII:
-        error = libusbip_get_string_descriptor_ascii(&ri->ci, ctx, &ri->dh,
+        error = libusbip_get_string_descriptor_ascii(&ri->ci, &ri->dh,
                                                      ri->idx, (unsigned char *)ri->data,
                                                      ri->length);
         break;
             
     case LIBUSBIP_RPC_USB_CONTROL_TRANSFER:
         /* NOTE: Not really an error. */
-        return libusbip_control_transfer(&ri->ci, ctx, &ri->dh, ri->req_type,
+        return libusbip_control_transfer(&ri->ci, &ri->dh, ri->req_type,
                                          ri->req, ri->val, ri->idx, (unsigned char *)ri->data,
                                          ri->len, ri->timeout);
         break; /* NEVER_REACHED */
             
     case LIBUSBIP_RPC_USB_BULK_TRANSFER:
         /* NOTE: Not really an error. */
-        return libusbip_bulk_transfer(&ri->ci, ctx, &ri->dh, ri->endpoint,
+        return libusbip_bulk_transfer(&ri->ci, &ri->dh, ri->endpoint,
                                       (unsigned char *)ri->data, ri->length,
                                       &ri->transferred, ri->timeout);
         break; /* NEVER_REACHED */

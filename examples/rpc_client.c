@@ -83,7 +83,7 @@ print_device_list(struct libusbip_device_list *dl) {
 }
 
 static int
-print_device_descriptor(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+print_device_descriptor(struct libusbip_connection_info *ci,
                         struct libusbip_device_list *dl) {
     libusbip_error_t error = LIBUSBIP_E_SUCCESS;
     int max = dl->n_devices;
@@ -92,7 +92,7 @@ print_device_descriptor(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
     for (i = 0; i < max; i++) {
         struct libusbip_device *idev = &dl->devices[i];
         struct libusbip_device_descriptor dd;
-        error = libusbip_get_device_descriptor(ci, ctx, idev, &dd);
+        error = libusbip_get_device_descriptor(ci, idev, &dd);
         if (error < 0) {
             error = LIBUSBIP_E_FAILURE;
             goto done;
@@ -107,7 +107,6 @@ done:
 int
 main(int argc, char *argv[]) {
     libusbip_error_t error;
-    libusbip_ctx_t ctx = LIBUSBIP_CTX_CLIENT;
     struct libusbip_connection_info ci;
     struct libusbip_device_list dl;
     int port;
@@ -123,27 +122,28 @@ main(int argc, char *argv[]) {
     // Setup session
     sscanf(argv[2], "%d", &port);
     ci.server_sock = connect_or_die(argv[1], port);
+    ci.ctx = LIBUSBIP_CTX_CLIENT;
     
-    error = libusbip_init(&ci, ctx);
+    error = libusbip_init(&ci);
     if (error < 0) {
         printf("rpc_client: libusbip_init failed\n");
         goto fail;
     }
     
-    libusbip_get_device_list(&ci, ctx, &dl);
+    libusbip_get_device_list(&ci, &dl);
     print_device_list(&dl);
         
-    error = print_device_descriptor(&ci, ctx, &dl);
+    error = print_device_descriptor(&ci, &dl);
     if (error < 0) {
         printf("rpc_client: libusbip_get_device_descriptor failed\n");
         goto exit_fail;
     }
     
-    libusbip_exit(&ci, ctx);
+    libusbip_exit(&ci);
     
     return 0;
 exit_fail:
-    libusbip_exit(&ci, ctx);
+    libusbip_exit(&ci);
 fail:
     return 1;
 }

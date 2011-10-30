@@ -90,6 +90,7 @@ struct libusbip_device_handle {
 struct libusbip_connection_info {
     int server_sock;
     int client_sock;
+    libusbip_ctx_t ctx;
 };
 
 struct libusbip_rpc_info {
@@ -102,11 +103,11 @@ struct libusbip_rpc_info {
     int intf;
     int conf;
     int alt_setting;
-    int length;
+    int length;         /* bulk transfer (among others) */
     int transferred;
     uint16_t req_type;
     uint16_t req;
-    uint16_t len;
+    uint16_t len;       /* control transfer */
     uint16_t val;
     uint16_t vid;
     uint16_t pid;
@@ -118,24 +119,24 @@ struct libusbip_rpc_info {
 
 libusbip_rpc_t libusbip_get_rpc(int sock);
 
-libusbip_error_t libusbip_rpc_call(libusbip_rpc_t rpc, libusbip_ctx_t ctx, struct libusbip_rpc_info *ri);
-libusbip_error_t libusbip_init(struct libusbip_connection_info *ci, libusbip_ctx_t ctx);
-libusbip_error_t libusbip_get_device_descriptor(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device *dev, struct libusbip_device_descriptor *dd);
-libusbip_error_t libusbip_open(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device *dev, struct libusbip_device_handle *dh);
-libusbip_error_t libusbip_claim_interface(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, int intf);
-libusbip_error_t libusbip_release_interface(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, int intf);
-libusbip_error_t libusbip_get_configuration(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, int *conf);
-libusbip_error_t libusbip_set_interface_alt_setting(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, int intf, int alt_setting);
-libusbip_error_t libusbip_reset_device(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh);
-libusbip_error_t libusbip_clear_halt(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, uint16_t endpoint);
+libusbip_error_t libusbip_rpc_call(libusbip_rpc_t rpc, struct libusbip_rpc_info *ri);
+libusbip_error_t libusbip_init(struct libusbip_connection_info *ci);
+libusbip_error_t libusbip_get_device_descriptor(struct libusbip_connection_info *ci, struct libusbip_device *dev, struct libusbip_device_descriptor *dd);
+libusbip_error_t libusbip_open(struct libusbip_connection_info *ci, struct libusbip_device *dev, struct libusbip_device_handle *dh);
+libusbip_error_t libusbip_claim_interface(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh, int intf);
+libusbip_error_t libusbip_release_interface(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh, int intf);
+libusbip_error_t libusbip_get_configuration(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh, int *conf);
+libusbip_error_t libusbip_set_interface_alt_setting(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh, int intf, int alt_setting);
+libusbip_error_t libusbip_reset_device(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh);
+libusbip_error_t libusbip_clear_halt(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh, uint16_t endpoint);
 
-void libusbip_exit(struct libusbip_connection_info *ci, libusbip_ctx_t ctx);
-void libusbip_get_device_list(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_list *dl);
-void libusbip_close(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh);
-void libusbip_open_device_with_vid_pid(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, uint16_t vid, uint16_t pid);
+void libusbip_exit(struct libusbip_connection_info *ci);
+void libusbip_get_device_list(struct libusbip_connection_info *ci, struct libusbip_device_list *dl);
+void libusbip_close(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh);
+void libusbip_open_device_with_vid_pid(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh, uint16_t vid, uint16_t pid);
 
-int libusbip_get_string_descriptor_ascii(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, uint16_t idx, unsigned char *data, int length);
-int libusbip_control_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, uint16_t req_type, uint16_t req, uint16_t val, uint16_t idx, unsigned char *data, uint16_t len, uint32_t timeout);
-int libusbip_bulk_transfer(struct libusbip_connection_info *ci, libusbip_ctx_t ctx, struct libusbip_device_handle *dh, uint16_t endpoint, unsigned char *data, int length, int *transferred, uint32_t timeout);
+int libusbip_get_string_descriptor_ascii(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh, uint16_t idx, unsigned char *data, int length);
+int libusbip_control_transfer(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh, uint16_t req_type, uint16_t req, uint16_t val, uint16_t idx, unsigned char *data, uint16_t len, uint32_t timeout);
+int libusbip_bulk_transfer(struct libusbip_connection_info *ci, struct libusbip_device_handle *dh, uint16_t endpoint, unsigned char *data, int length, int *transferred, uint32_t timeout);
 
 #endif /* LIBUSBIP_H */

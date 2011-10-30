@@ -71,6 +71,7 @@ server_loop(int sock) {
         return;
     }
     
+    ri.ci.ctx = LIBUSBIP_CTX_SERVER;
     ri.ci.client_sock = accept(sock, NULL, NULL);
     if (ri.ci.client_sock == -1) {
         fprintf(stderr, "Error! Failed to accept an incoming connection.\n");
@@ -80,7 +81,7 @@ server_loop(int sock) {
     while (1) {
         libusbip_rpc_t rpc = libusbip_get_rpc(ri.ci.client_sock);
         
-        libusbip_rpc_call(rpc, LIBUSBIP_CTX_SERVER, &ri);
+        libusbip_rpc_call(rpc, &ri);
         
         if (rpc == LIBUSBIP_RPC_USB_EXIT)
             goto done;

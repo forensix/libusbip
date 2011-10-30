@@ -76,7 +76,7 @@ connect_or_die(const char *ip, int port) {
 }
 
 struct idev_info
-idevice_available(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
+idevice_available(struct libusbip_connection_info *ci,
                   struct libusbip_device_list *dl) {
     
     int max = dl->n_devices;
@@ -89,7 +89,7 @@ idevice_available(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
         libusbip_error_t error;
         struct libusbip_device *idev = &dl->devices[i];
         struct libusbip_device_descriptor dd;
-        error = libusbip_get_device_descriptor(ci, ctx, idev, &dd);
+        error = libusbip_get_device_descriptor(ci, idev, &dd);
         if (error < 0)
             continue;
         if (dd.idVendor != 0x05AC)
@@ -113,7 +113,6 @@ done:
 int
 main(int argc, char *argv[]) {
     libusbip_error_t error;
-    libusbip_ctx_t ctx = LIBUSBIP_CTX_CLIENT;
     struct libusbip_device *idev;
     struct libusbip_connection_info ci;
     struct libusbip_device_list dl;
@@ -134,16 +133,17 @@ main(int argc, char *argv[]) {
     // Setup session
     sscanf(argv[2], "%d", &port);
     ci.server_sock = connect_or_die(argv[1], port);
+    ci.ctx = LIBUSBIP_CTX_CLIENT;
     
-    error = libusbip_init(&ci, ctx);
+    error = libusbip_init(&ci);
     if (error < 0) {
         printf("[*] idev_serial: libusbip_init failed\n");
         goto fail;
     }
     
-    libusbip_get_device_list(&ci, ctx, &dl);
+    libusbip_get_device_list(&ci, &dl);
     
-    info = idevice_available(&ci, ctx, &dl); 
+    info = idevice_available(&ci, &dl); 
     if (!info.index) {
         printf("[*] idev_serial: No iDevice found!\n");
         goto exit_fail;
@@ -151,7 +151,7 @@ main(int argc, char *argv[]) {
     
     // Open
     idev = &dl.devices[info.index];
-    error = libusbip_open(&ci, ctx, idev, &dh);
+    error = libusbip_open(&ci, idev, &dh);
     if (error < 0) {
         printf("[*] idev_serial: libusbip_open failed\n");
         goto exit_fail;
@@ -159,7 +159,7 @@ main(int argc, char *argv[]) {
     
     // Get Configuration
     conf = 0;
-    error = libusbip_get_configuration(&ci, ctx, &dh, &conf);
+    error = libusbip_get_configuration(&ci, &dh, &conf);
     if (error < 0) {
         printf("[*] idev_serial: libusbip_get_configuration failed\n");
         goto close_fail;
@@ -167,7 +167,7 @@ main(int argc, char *argv[]) {
     
     if (conf != 1) {
         // Set Configuration
-        error = libusbip_set_configuration(&ci, ctx, &dh, 1);
+        error = libusbip_set_configuration(&ci, &dh, 1);
         if (error < 0) {
             printf("[*] idev_serial: libusbip_set_configuration failed\n");
             goto close_fail;
@@ -175,14 +175,14 @@ main(int argc, char *argv[]) {
     }
     
     // Claim
-    error = libusbip_claim_interface(&ci, ctx, &dh, 0x0);
+    error = libusbip_claim_interface(&ci, &dh, 0x0);
     if (error < 0) {
         printf("[*] idev_serial: libusbip_claim_interface failed\n");
         goto close_fail;
     } 
     
     // Set Interface
-    error = libusbip_set_interface_alt_setting(&ci, ctx, &dh, 0x0, 0x0); // Dfu
+    error = libusbip_set_interface_alt_setting(&ci, &dh, 0x0, 0x0); // Dfu
     if (error < 0) {
         printf("[*] idev_serial: libusbip_set_interface_alt_setting failed\n");
         goto release_fail;
@@ -196,7 +196,7 @@ main(int argc, char *argv[]) {
     }
     
     // Get String Descriptor
-    error = libusbip_get_string_descriptor_ascii(&ci, ctx, &dh, info.serial, data, 255);
+    error = libusbip_get_string_descriptor_ascii(&ci, &dh, info.serial, data, 255);
     if (error < 0) {
         printf("[*] idev_serial: libusbip_get_string_descriptor_ascii failed\n");
         free(data);
@@ -206,22 +206,22 @@ main(int argc, char *argv[]) {
     free(data);
     
     // Release
-    error = libusbip_release_interface(&ci, ctx, &dh, 0x0);
+    error = libusbip_release_interface(&ci, &dh, 0x0);
     if (error < 0) {
         printf("[*] idev_serial: libusbip_release_interface failed\n");
         goto close_fail;
     }
     
-    libusbip_close(&ci, ctx, &dh);
-    libusbip_exit(&ci, ctx);
+    libusbip_close(&ci, &dh);
+    libusbip_exit(&ci);
     
     return 0;
 release_fail:
-    libusbip_release_interface(&ci, ctx, &dh, 0x0);
+    libusbip_release_interface(&ci, &dh, 0x0);
 close_fail:
-    libusbip_close(&ci, ctx, &dh);
+    libusbip_close(&ci, &dh);
 exit_fail:
-    libusbip_exit(&ci, ctx);
+    libusbip_exit(&ci);
 fail:
     return 1;
 }

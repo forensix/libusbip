@@ -234,4 +234,3 @@ void
 proto_recv_rpc(libusbip_rpc_t *rpc, int sock) {
     proto_recv_int((int *)rpc, sock);
 }
-

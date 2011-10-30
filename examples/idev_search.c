@@ -71,8 +71,7 @@ connect_or_die(const char *ip, int port) {
 }
 
 static int
-idevice_available(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
-                  struct libusbip_device_list *dl) {
+idevice_available(struct libusbip_connection_info *ci, struct libusbip_device_list *dl) {
 
     int max = dl->n_devices;
     int i, retval = 0;
@@ -81,7 +80,7 @@ idevice_available(struct libusbip_connection_info *ci, libusbip_ctx_t ctx,
         libusbip_error_t error;
         struct libusbip_device *idev = &dl->devices[i];
         struct libusbip_device_descriptor dd;
-        error = libusbip_get_device_descriptor(ci, ctx, idev, &dd);
+        error = libusbip_get_device_descriptor(ci, idev, &dd);
         if (error < 0)
             continue;
         if (dd.idVendor != 0x05AC)
@@ -104,7 +103,6 @@ done:
 int
 main(int argc, char *argv[]) {
     libusbip_error_t error;
-    libusbip_ctx_t ctx = LIBUSBIP_CTX_CLIENT;
     struct libusbip_device *idev;
     struct libusbip_connection_info ci;
     struct libusbip_device_list dl;
@@ -123,25 +121,26 @@ main(int argc, char *argv[]) {
     // Setup session
     sscanf(argv[2], "%d", &port);
     ci.server_sock = connect_or_die(argv[1], port);
+    ci.ctx = LIBUSBIP_CTX_CLIENT;
     
-    error = libusbip_init(&ci, ctx);
+    error = libusbip_init(&ci);
     if (error < 0) {
         printf("[*] idev_search: libusbip_init failed\n");
         goto fail;
     }
     
-    libusbip_get_device_list(&ci, ctx, &dl);
+    libusbip_get_device_list(&ci, &dl);
     
-    idx = idevice_available(&ci, ctx, &dl); 
+    idx = idevice_available(&ci, &dl); 
     if (!idx) {
         printf("[*] idev_search: No iDevice found!\n");
         goto exit_fail;
     }
 
-    libusbip_exit(&ci, ctx);
+    libusbip_exit(&ci);
     return 0;
 exit_fail:
-    libusbip_exit(&ci, ctx);
+    libusbip_exit(&ci);
 fail:
     return 1;
 }
