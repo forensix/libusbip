@@ -1,4 +1,4 @@
-Libusbip - C library which supports USB over IP
+Libusbip - C library to support USB over IP
 ===============================================
 
 Introducing
