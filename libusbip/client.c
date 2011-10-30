@@ -297,7 +297,7 @@ client_usb_bulk_transfer(struct libusbip_connection_info *ci,
     // FIXME: I don't know if this is correct.
     if ((endpoint & LIBUSB_ENDPOINT_DIR_MASK)
         == LIBUSB_ENDPOINT_IN && data) {
-		memcpy(data, buf, length);
+        memcpy(data, buf, length);
     }
     
     return bytes;
