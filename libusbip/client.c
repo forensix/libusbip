@@ -248,7 +248,8 @@ client_usb_control_transfer(struct libusbip_connection_info *ci,
     int sock = ci->server_sock;
     uint16_t buf[LIBUSBIP_MAX_DATA];
     
-    memcpy(buf, data, len);
+	if (data)
+		memcpy(buf, data, len);
     
     proto_send_rpc(&rpc, sock);
     proto_send_struct_dev_hndl(dh, sock);
@@ -263,7 +264,7 @@ client_usb_control_transfer(struct libusbip_connection_info *ci,
     proto_recv_int(&bytes, sock);
     
     if ((req_type & LIBUSB_ENDPOINT_DIR_MASK)
-        == LIBUSB_ENDPOINT_IN) {
+        == LIBUSB_ENDPOINT_IN && data) {
         memcpy(data, buf, len);
     }
     
@@ -280,7 +281,8 @@ client_usb_bulk_transfer(struct libusbip_connection_info *ci,
     int sock = ci->server_sock;
     uint16_t buf[LIBUSBIP_MAX_DATA];
     
-    memcpy(buf, data, length);
+	if (data)
+		memcpy(buf, data, length);
     
     proto_send_rpc(&rpc, sock);
     proto_send_struct_dev_hndl(dh, sock);
@@ -294,8 +296,8 @@ client_usb_bulk_transfer(struct libusbip_connection_info *ci,
     
     // FIXME: I don't know if this is correct.
     if ((endpoint & LIBUSB_ENDPOINT_DIR_MASK)
-        == LIBUSB_ENDPOINT_IN) {
-        memcpy(data, buf, length);
+        == LIBUSB_ENDPOINT_IN && data) {
+		memcpy(data, buf, length);
     }
     
     return bytes;

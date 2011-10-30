@@ -22,7 +22,7 @@
 #include "inttypes.h"
 
 #define LIBUSBIP_MAX_DEVS 256
-#define LIBUSBIP_MAX_DATA 1024
+#define LIBUSBIP_MAX_DATA 5012
 
 typedef enum {
     LIBUSBIP_E_SUCCESS,

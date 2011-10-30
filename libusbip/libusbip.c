@@ -24,7 +24,7 @@
 #include <libusb-1.0/libusb.h>
 
 #define IS_VALID_OBJ(__struct) (__struct != NULL)
-#define IS_VALID_LENGTH(__length) (__length > 0 && __length < LIBUSBIP_MAX_DATA)
+#define IS_VALID_LENGTH(__length) (__length >= 0 && __length < LIBUSBIP_MAX_DATA)
 #define IS_VALID_CONTEXT(__ctx) (__ctx == LIBUSBIP_CTX_CLIENT || __ctx == LIBUSBIP_CTX_SERVER) // Not used yet
 
 static struct libusb_context *libusbip_ctx = NULL;
@@ -450,11 +450,7 @@ libusbip_control_transfer(struct libusbip_connection_info *ci,
         error_illegal_libusbip_device_handle(__func__);
         return LIBUSBIP_E_FAILURE;
     }
-    if (!IS_VALID_OBJ(data)) {
-        error_illegal_buffer(__func__);
-        return LIBUSBIP_E_FAILURE;
-    }
-    if (ci->ctx == LIBUSBIP_CTX_CLIENT && !IS_VALID_LENGTH(len)) {
+	if (ci->ctx == LIBUSBIP_CTX_CLIENT && !IS_VALID_LENGTH(len)) { // FIXME: compiler warning
         error_illegal_length(__func__);
         return LIBUSBIP_E_FAILURE;
     }
@@ -486,11 +482,7 @@ libusbip_bulk_transfer(struct libusbip_connection_info *ci,
         error_illegal_libusbip_device_handle(__func__);
         return LIBUSBIP_E_FAILURE;
     }
-    if (!IS_VALID_OBJ(data)) {
-        error_illegal_buffer(__func__);
-        return LIBUSBIP_E_FAILURE;
-    }
-    if (ci->ctx == LIBUSBIP_CTX_CLIENT && !IS_VALID_LENGTH(length)) {
+	if (ci->ctx == LIBUSBIP_CTX_CLIENT && !IS_VALID_LENGTH(length)) {
         error_illegal_length(__func__);
         return LIBUSBIP_E_FAILURE;
     }
