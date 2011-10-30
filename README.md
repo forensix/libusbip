@@ -55,17 +55,17 @@ libusbip consists of the following structures:
 - <b>struct libusbip_device_list</b><br>
   Reflection of libusb_device **
 
-- <b>libusbip_device_descriptor</b><br>
+- <b>struct libusbip_device_descriptor</b><br>
   Reflection of libusb_device_descriptor 
 
-- <b>libusbip_device_handle</b><br>
+- <b>struct libusbip_device_handle</b><br>
   Reflection of libusb_device_handle
 
-- <b>libusbip_connection_info</b><br>
+- <b>struct libusbip_connection_info</b><br>
   Holds information about the client or server, respectively. And<br>
   if libusbip is used in client or server context.
 
-- <b>libusbip_rpc_info</b><br>
+- <b>struct libusbip_rpc_info</b><br>
   Holds all information about the structures mentioned above. You<br>
   require that structure if you use libusbip through the<br>
   libusbip_rpc_call convenience function.
