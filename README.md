@@ -16,7 +16,7 @@ How to build
 To build libusbip you first need to install libusb-1.0 (http://www.libusb.org/wiki/libusb-1.0) and<br>
 tpl (http://tpl.sourceforge.net/).<br>
 
-After that just run <b>make</b> to compile libusbip or <b>make all</b> to compile libusbip and<br>
+After that just run <i>make</i> to compile libusbip or <i>make all</i> to compile libusbip and<br>
 all example programs.
 
 Supported functions
@@ -74,14 +74,14 @@ Typedefs
 --------
 
 - <b>libusbip_error_t</b><br>
-  libusbip error identifier. Can be <b>LIBUSBIP_E_SUCCESS</b> or <b>LIBUSBIP_E_FAILURE</b>.
+  libusbip error identifier. Can be <i>LIBUSBIP_E_SUCCESS</i> or <i>LIBUSBIP_E_FAILURE</i>.
 
 - <b>libusbip_rpc_t</b><br>
-  Identifies the Remote Procedure Call. For example, <b>LIBUSBIP_RPC_USB_INIT</b><br>
+  Identifies the Remote Procedure Call. For example, <i>LIBUSBIP_RPC_USB_INIT</i><br>
   stands for libusb_init
 
 - <b>libusbip_ctx_t</b><br>
-  ibusbip context identifier. Can be <b>LIBUSBIP_CTX_CLIENT</b> or <b>LIBUSBIP_CTX_SERVER</b>.
+  ibusbip context identifier. Can be <i>LIBUSBIP_CTX_CLIENT</i> or <i>LIBUSBIP_CTX_SERVER</i>.
 
 
 
