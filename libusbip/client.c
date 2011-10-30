@@ -248,8 +248,8 @@ client_usb_control_transfer(struct libusbip_connection_info *ci,
     int sock = ci->server_sock;
     uint16_t buf[LIBUSBIP_MAX_DATA];
     
-	if (data)
-		memcpy(buf, data, len);
+    if (data)
+        memcpy(buf, data, len);
     
     proto_send_rpc(&rpc, sock);
     proto_send_struct_dev_hndl(dh, sock);
@@ -281,8 +281,8 @@ client_usb_bulk_transfer(struct libusbip_connection_info *ci,
     int sock = ci->server_sock;
     uint16_t buf[LIBUSBIP_MAX_DATA];
     
-	if (data)
-		memcpy(buf, data, length);
+    if (data)
+        memcpy(buf, data, length);
     
     proto_send_rpc(&rpc, sock);
     proto_send_struct_dev_hndl(dh, sock);

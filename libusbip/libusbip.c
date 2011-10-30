@@ -450,7 +450,7 @@ libusbip_control_transfer(struct libusbip_connection_info *ci,
         error_illegal_libusbip_device_handle(__func__);
         return LIBUSBIP_E_FAILURE;
     }
-	if (ci->ctx == LIBUSBIP_CTX_CLIENT && !IS_VALID_LENGTH(len)) { // FIXME: compiler warning
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT && !IS_VALID_LENGTH(len)) { // FIXME: compiler warning
         error_illegal_length(__func__);
         return LIBUSBIP_E_FAILURE;
     }
@@ -482,7 +482,7 @@ libusbip_bulk_transfer(struct libusbip_connection_info *ci,
         error_illegal_libusbip_device_handle(__func__);
         return LIBUSBIP_E_FAILURE;
     }
-	if (ci->ctx == LIBUSBIP_CTX_CLIENT && !IS_VALID_LENGTH(length)) {
+    if (ci->ctx == LIBUSBIP_CTX_CLIENT && !IS_VALID_LENGTH(length)) {
         error_illegal_length(__func__);
         return LIBUSBIP_E_FAILURE;
     }
