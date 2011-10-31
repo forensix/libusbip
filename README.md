@@ -19,8 +19,8 @@ tpl (http://tpl.sourceforge.net/).<br>
 After that just run <i>make</i> to compile libusbip or <i>make all</i> to compile libusbip and<br>
 all example programs.
 
-Supported functions
--------------------
+Supported libusb functions
+--------------------------
 
 Currently, libusbip provides support for the following functions:
 
@@ -82,6 +82,131 @@ Typedefs
 
 - <b>libusbip_ctx_t</b><br>
   ibusbip context identifier. Can be <i>LIBUSBIP_CTX_CLIENT</i> or <i>LIBUSBIP_CTX_SERVER</i>.
+
+Functions
+---------
+
+- <b>libusbip_error_t libusbip_init(struct libusbip_connection_info *ci)</b>
+  <br>
+  <br>
+  Initialize libusbip.
+  <br>
+  <br>
+  This function must be called before calling any other libusbip function.
+  <br>
+  <br>
+  <b>Parameters:</b>
+  <br>
+  <i>ci</i> connection info pointer.
+  <br>
+  <br>
+  <b>Returns:</b>
+  <br>
+  <i>LIBUSBIP_E_SUCCESS</i> on success, or <i>LIBUSBIP_E_FAILURE</i> on failure.
+  <br>
+  <br>
+- <b>void libusbip_exit(struct libusbip_connection_info *ci)</b>
+  <br>
+  <br>
+  Deinitialize libusbip.
+  <br>
+  <br>
+  Should be called after closing all open devices and before your application terminates.
+  <br>
+  <br>
+  <b>Parameters:</b>
+  <br>
+  <i>ci</i> connection info pointer.
+  <br>
+  <br>
+- <b>void libusbip_get_device_list(struct libusbip_connection_info *ci, struct libusbip_device_list *dl)</b>
+  <br>
+  <br>
+  Returns a list of USB devices currently attached to the system.
+  <br>
+  <br>
+  This is your entry point into finding a USB device to operate.
+  <br>
+  <br>
+  <b>Parameters:</b>
+  <br>
+  <i>ci</i> connection info pointer.
+  <br>
+  <i>dl</i> pointer as output location for a list of devices.
+  <br>
+  <br>
+- <b>libusbip_get_device_descriptor(struct libusbip_connection_info *ci, struct libusbip_device *dev,<br>
+     struct libusbip_device_descriptor *dd)</b>
+  <br>
+  <br>
+  Get the USB configuration descriptor for the currently active configuration.
+  <br>
+  <br>
+  <b>Parameters:</b>
+  <br>
+  <i>ci</i> connection info pointer.
+  <br>
+  <i>dev</i> The device.
+  <br>
+  <i>dd</i> pointer as output location for the descriptor data.
+  <br>
+  <br>
+  <b>Returns:</b>
+  <br>
+  <i>LIBUSBIP_E_SUCCESS</i> on success, or <i>LIBUSBIP_E_FAILURE</i> on failure.
+  <br>
+  <br>
+- <b>libusbip_error_t libusbip_open(struct libusbip_connection_info *ci, struct libusbip_device *dev,<br>
+     struct libusbip_device_handle *dh)</b>
+  <br>
+  <br>
+  Open a device and obtain a device handle.
+  <br>
+  <br>
+  <b>Parameters:</b>
+  <br>
+  <i>ci</i> connection info pointer.
+  <br>
+  <i>dev</i> The device.
+  <br>
+  <i>dh</i> pointer as output location for the returned device handle pointer.
+  <br>
+  <br>
+  <b>Returns:</b>
+  <br>
+  <i>LIBUSBIP_E_SUCCESS</i> on success, or <i>LIBUSBIP_E_FAILURE</i> on failure.
+  <br>
+  <br>
+- <b>libusbip_error_t libusbip_claim_interface(struct libusbip_connection_info *ci,<br>
+     struct libusbip_device_handle *dh, int intf)</b>
+  <br>
+  <br>
+  Claim an interface on a given device handle.
+  <br>
+  <br>
+  <b>Parameters:</b>
+  <br>
+  <i>ci</i> connection info pointer.
+  <br>
+  <i>dh</i> The device handle.
+  <br>
+  <i>intf</i> the number of the interface you wish to claim
+  <br>
+  <br>
+  <b>Returns:</b>
+  <br>
+  <i>LIBUSBIP_E_SUCCESS</i> on success, or <i>LIBUSBIP_E_FAILURE</i> on failure.
+  <br>
+  <br>
+
+
+
+
+
+
+
+
+
 
 
 
